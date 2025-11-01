@@ -122,8 +122,8 @@ class ClientFlightDecoder extends FlightDecoder {
   }
 
   /**
-   * 创建占位组件
    * 当模块未找到或加载失败时使用
+   * 客户端加载了一个服务端没标注的Client Component，应该报错
    */
   private createPlaceholderComponent(id: string) {
     return (props: any) => {

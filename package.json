@@ -5,7 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "tsx build/index.js",
-    "start": "tsx server/index.js"
+    "start": "tsx server/index.js",
+    "dev": "npm run build && npm start",
+    "clean": "rm -rf .next",
+    "typecheck": "tsc --noEmit",
+    "rebuild": "npm run clean && npm run build"
   },
   "keywords": [
     "next.js",
@@ -13,10 +17,20 @@
     "rsc",
     "app-router",
     "flight-protocol",
-    "streaming"
+    "streaming",
+    "server-components",
+    "educational"
   ],
-  "author": "junejunli",
+  "author": "junejuneli",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/junejuneli/mini-nextjs-app-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/junejuneli/mini-nextjs-app-router/issues"
+  },
+  "homepage": "https://github.com/junejuneli/mini-nextjs-app-router#readme",
   "dependencies": {
     "express": "^4.18.2",
     "react": "^18.2.0",

@@ -1,6 +1,7 @@
 import React, { useState, useTransition, useCallback, useEffect, Suspense } from 'react'
-import { RouterContext } from './router-context.jsx'
+import { RouterContext } from '../shared/router-context.jsx'
 import { flightDecoder } from './module-map.ts'
+import { extractBodyChildren } from '../shared/extract-body.js'
 
 /**
  * Router Component - 管理客户端路由
@@ -26,10 +27,18 @@ export function Router({ initialTree, initialPathname }) {
     let newTree = routeCache.get(href)?.tree
 
     if (!newTree) {
+      console.log(`🌐 [Router] 加载路由: ${href}`)
       const response = await fetch(`${href}?_rsc=1`)
       const flight = await response.text()
-      newTree = flightDecoder.decode(flight)
+      console.log(`📦 [Router] 接收 Flight 数据: 长度=${flight.length}`)
+
+      // 解码 flight 并提取 body 子元素（与初始化时保持一致）
+      const decodedTree = flightDecoder.decode(flight)
+      newTree = extractBodyChildren(decodedTree)
+
       routeCache.set(href, { tree: newTree })
+    } else {
+      console.log(`⚡ [Router] 使用缓存路由: ${href}`)
     }
 
     return newTree
@@ -38,28 +47,26 @@ export function Router({ initialTree, initialPathname }) {
   const navigate = useCallback(async href => {
     if (href === window.location.pathname) return
 
+    console.log(`🔀 [Router] 导航到: ${href}`)
     try {
       const newTree = await loadRoute(href)
-      startTransition(() => setCurrentTree(newTree))
-
-      console.log('ljj - 设置新路由',href, newTree)
-
+      startTransition(() => {
+        setCurrentTree(newTree)
+      })
       window.history.pushState({ href }, '', href)
     } catch (error) {
-      console.error('Navigation failed:', error)
       window.location.href = href
     }
   }, [loadRoute])
 
   const handlePopState = useCallback(async event => {
     const href = event.state?.href || window.location.pathname
+    console.log(`⬅️  [Router] 浏览器后退/前进: ${href}`)
 
     try {
       const newTree = await loadRoute(href)
       startTransition(() => setCurrentTree(newTree))
-      console.log('ljj - 设置新路由2',href, newTree)
     } catch (error) {
-      console.error('Browser navigation failed:', error)
       window.location.href = href
     }
   }, [loadRoute])

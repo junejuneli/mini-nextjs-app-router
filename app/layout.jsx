@@ -109,6 +109,7 @@ export default function RootLayout({ children }) {
             <li><Link href="/dashboard">仪表盘 (Client)</Link></li>
             <li><Link href="/async-test">异步测试</Link></li>
             <li><Link href="/isr-test">ISR 测试</Link></li>
+            <li><Link href="/error-test">错误测试</Link></li>
           </ul>
         </nav>
 

@@ -27,6 +27,17 @@ npm start
 
 访问 http://localhost:3000
 
+## 示例页面
+
+项目包含多个示例页面，演示不同的 RSC 特性：
+
+- **`/`** - 首页（Server Component）
+- **`/about`** - 关于页面（Server Component）
+- **`/dashboard`** - 仪表盘（Client Component 示例）
+- **`/async-test`** - 异步数据获取（含 loading.jsx）
+- **`/isr-test`** - ISR 增量静态再生成（10 秒 revalidate）
+- **`/error-test`** - 错误处理（含 error.jsx）
+
 ## 项目结构
 
 ```
@@ -41,13 +52,21 @@ mini-nextjs-app-router/
 │   └── ...
 │
 ├── server/                 # 服务端运行时
+│   ├── index.js           # Express 服务器入口
+│   ├── regenerate.js      # ISR 重新生成逻辑
+│   └── ...
+│
+├── shared/                 # 服务端/客户端共享代码
 │   ├── flight-encoder.js  # Flight Protocol 编码器
+│   ├── flight-decoder.js  # Flight Protocol 解码器
 │   ├── rsc-renderer.js    # RSC 渲染器
 │   └── ...
 │
 └── client/                 # 客户端运行时
-    ├── module-map.ts      # 模块映射 + Flight Protocol 解码器
-    └── ...
+    ├── index.jsx          # 客户端入口（Hydration）
+    ├── router.jsx         # 客户端路由
+    ├── Link.jsx           # Link 组件
+    └── module-map.ts      # 模块映射表
 ```
 
 ## 核心原理
@@ -107,24 +126,26 @@ J0:["$","div",null,{"children":["$","@1",null,{"text":"Click"}]}]
    - 与 JSON 序列化的对比
    - 实际案例分析
 
-3. **[THEME_SWITCHING_COMPARISON.md](./THEME_SWITCHING_COMPARISON.md)**
-   - 主题切换功能在 Page Router 和 App Router 下的完整实现
-   - 运行逻辑详细对比
-   - 状态管理最佳实践
-   - 性能对比分析
+3. **[ARCHITECTURE.md](./ARCHITECTURE.md)**
+   - 项目整体架构说明
+   - React Server Components 核心概念
+   - 渲染流程详解
+   - 与真实 Next.js 对比
 
-4. **[FIXES.md](./FIXES.md)**
-   - 关键问题修复说明
-   - 嵌套 Layout 系统修复
-   - Hydration Mismatch 解决方案
+4. **[CONSOLE_LOGS.md](./CONSOLE_LOGS.md)**
+   - 控制台日志说明
+   - 典型场景日志输出解析
+   - 帮助理解客户端路由执行流程
 
 ### 📖 代码实现
 
 **核心源码**:
-- [server/flight-encoder.js](./server/flight-encoder.js) - Flight Protocol 编码器实现
-- [client/module-map.ts](./client/module-map.ts) - 模块映射与 Flight Protocol 解码器实现
-- [server/rsc-renderer.js](./server/rsc-renderer.js) - RSC 渲染器
+- [shared/flight-encoder.js](./shared/flight-encoder.js) - Flight Protocol 编码器实现
+- [shared/flight-decoder.js](./shared/flight-decoder.js) - Flight Protocol 解码器实现
+- [client/module-map.ts](./client/module-map.ts) - 客户端模块映射（基于 FlightDecoder）
+- [shared/rsc-renderer.js](./shared/rsc-renderer.js) - RSC 渲染器
 - [build/scan-app.js](./build/scan-app.js) - app/ 目录扫描
+- [server/index.js](./server/index.js) - Express 服务器入口
 
 ### 🎯 学习路径
 

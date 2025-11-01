@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useContext } from 'react'
-import { RouterContext } from './router-context.jsx'
+import { RouterContext } from '../shared/router-context.jsx'
 
 /**
  * Link 组件 - 客户端导航
@@ -13,6 +13,7 @@ export default function Link({ href, children, ...props }) {
 
   const handleClick = e => {
     e.preventDefault()
+    console.log(`🔗 [Link] 点击链接: ${href}`)
     navigate(href)
   }
 
