@@ -122,10 +122,25 @@ export class FlightEncoder {
     }
 
     // Case 2: React 内置组件 (Suspense, Fragment, etc.)
-    // 这些是 Symbol，需要特殊处理 - 渲染它们的 children
+    // 这些是 Symbol，需要特殊处理
     if (typeof type === 'symbol') {
-      // 对于 Suspense，在 SSG 时我们直接渲染 children (不显示 fallback)
-      // 对于 Fragment，也是直接渲染 children
+      const symbolName = type.description || Symbol.keyFor(type)
+
+      // ⭐ 特殊处理 Suspense：保留边界，序列化 fallback 和 children
+      // 这样客户端可以正确显示 loading.jsx 定义的 fallback UI
+      if (symbolName === 'react.suspense') {
+        return [
+          FLIGHT_MARKERS.MODULE_REF,  // '$'
+          'Suspense',                  // 特殊标记，用于客户端识别
+          key,
+          {
+            fallback: await this.encodeValue(props.fallback),
+            children: await this.encodeValue(props.children)
+          }
+        ]
+      }
+
+      // 其他 Symbol 类型（如 Fragment）：展开 children
       if (props && props.children !== undefined) {
         return await this.encodeValue(props.children)
       }

@@ -241,9 +241,9 @@ function buildUrlPath(parentPath, segment) {
 
 ### 支持的配置类型
 
-Next.js App Router 通过**导出配置常量**控制渲染行为：
+本项目实现了 Next.js App Router 的**核心配置**，通过导出配置常量控制渲染行为：
 
-#### 1. `revalidate` - ISR 配置
+#### 1. `revalidate` - ISR 配置 ✅ 已实现
 
 ```javascript
 // app/blog/page.jsx
@@ -260,7 +260,9 @@ export default function BlogPage() {
 - `number` - ISR，每 N 秒后台重新生成
 - `false` - 强制每次重新渲染（SSR）
 
-#### 2. `dynamic` - 渲染模式配置
+**实现文件**：`build/scan-app.js` - `extractRevalidateConfig()`
+
+#### 2. `dynamic` - 渲染模式配置 ✅ 已实现
 
 ```javascript
 // app/dashboard/page.jsx
@@ -272,22 +274,23 @@ export default function DashboardPage() {
 }
 ```
 
-**选项**：
+**支持的选项**：
 - `'auto'` - 自动选择（默认）
 - `'force-static'` - 强制 SSG
-- `'force-dynamic'` - 强制 SSR
+- `'force-dynamic'` - 强制 SSR（已测试）
 - `'error'` - 禁止动态渲染，抛错
 
-#### 3. `dynamicParams` - 动态参数处理
+**实现文件**：`build/scan-app.js` - `extractDynamicConfig()`
 
-```javascript
-// app/blog/[id]/page.jsx
-export const dynamicParams = false  // 404 on unlisted params
+#### 3. 未实现的配置（真实 Next.js 支持）
 
-export async function generateStaticParams() {
-  return [{ id: '1' }, { id: '2' }]
-}
-```
+以下配置在真实 Next.js 中可用，但本教学项目**未实现**：
+
+- `dynamicParams` - 动态参数处理
+- `generateStaticParams()` - 动态路由预渲染
+- `fetchCache` - Fetch 缓存控制
+- `runtime` - 运行时选择（nodejs/edge）
+- `preferredRegion` - 边缘函数区域
 
 ### 配置提取实现
 
@@ -719,10 +722,12 @@ collectStaticRoutes(routeTree)
    - 缓存机制（避免重复解析）
 
 2. **功能完整**：
-   - `generateStaticParams()` - 动态路由预渲染
-   - `generateMetadata()` - 动态元数据
-   - Parallel Routes - 并行路由段
-   - Intercepting Routes - 路由拦截
+   - `generateStaticParams()` - 动态路由预渲染（本项目未实现）
+   - `generateMetadata()` - 动态元数据（本项目未实现）
+   - `dynamicParams` - 动态参数处理（本项目未实现）
+   - Parallel Routes - 并行路由段（本项目未实现）
+   - Intercepting Routes - 路由拦截（本项目未实现）
+   - 更多配置选项（fetchCache, runtime, preferredRegion 等）
 
 3. **生产级特性**：
    - 分布式 ISR（多实例协调）
@@ -876,8 +881,9 @@ export const revalidate = process.env.NODE_ENV === 'production' ? 60 : 0
    - `server/index.js` - 运行时路由
 
 2. **实验修改**：
-   - 添加新的配置类型（如 `export const cache = 'no-store'`）
-   - 实现 `generateStaticParams()` 支持
+   - 添加新的配置类型（如 `export const fetchCache = 'force-cache'`）
+   - 实现 `generateStaticParams()` 支持动态路由预渲染
+   - 实现 `dynamicParams` 控制未列出的参数
    - 优化路由匹配性能
 
 3. **对比真实 Next.js**：
@@ -893,6 +899,63 @@ export const revalidate = process.env.NODE_ENV === 'production' ? 60 : 0
 - [ISR 详解](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating)
 - [Route Segment Config](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)
 - 本项目源码：`build/scan-app.js`, `build/render-static.js`
+
+---
+
+## 附录：配置实现状态
+
+### 本项目实现的配置
+
+| 配置项 | 状态 | 文件位置 | 说明 |
+|--------|------|----------|------|
+| `revalidate` | ✅ 完整实现 | `build/scan-app.js:208` | ISR 时间控制，支持数字和 false |
+| `dynamic` | ✅ 完整实现 | `build/scan-app.js:240` | 渲染模式控制，支持 4 种选项 |
+
+### Next.js 官方配置（未实现）
+
+| 配置项 | 优先级 | 作用 | 实现难度 |
+|--------|--------|------|----------|
+| `generateStaticParams()` | ⭐⭐⭐ 高 | 动态路由预渲染 | 中等 |
+| `dynamicParams` | ⭐⭐ 中 | 控制未列出参数的处理 | 简单 |
+| `generateMetadata()` | ⭐⭐ 中 | 动态生成 meta 标签 | 中等 |
+| `fetchCache` | ⭐ 低 | Fetch 缓存行为 | 简单 |
+| `runtime` | ⭐ 低 | 选择运行时（nodejs/edge） | 复杂 |
+| `preferredRegion` | ⭐ 低 | 边缘函数区域 | 复杂（需部署平台） |
+
+**实现建议**：
+
+对于学习项目，建议优先实现：
+1. ✅ `revalidate` - 已实现，是 ISR 的核心
+2. ✅ `dynamic` - 已实现，控制 SSR/SSG
+3. 🔜 `generateStaticParams()` - 下一步建议实现，完善动态路由
+4. 🔜 `dynamicParams` - 配合上一项使用
+
+**扩展实现示例**：
+
+```javascript
+// 实现 generateStaticParams() 提取
+function extractGenerateStaticParams(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8')
+
+  // 检查是否导出 generateStaticParams
+  if (/export\s+(async\s+)?function\s+generateStaticParams/.test(content)) {
+    return true
+  }
+
+  return false
+}
+
+// 在预渲染时调用
+if (node.page.hasGenerateStaticParams) {
+  const pageModule = await import(node.page.absolutePath)
+  const params = await pageModule.generateStaticParams()
+
+  // 为每个参数组合生成页面
+  for (const param of params) {
+    await renderRSC(routePath, param, clientComponentMap)
+  }
+}
+```
 
 ---
 

@@ -256,6 +256,22 @@ export class FlightDecoder {
     // 递归解析 props（props 中可能包含嵌套的 React 元素）
     const resolvedProps = this.resolveValue(props, modules, chunks) || {}
 
+    // ⭐ 特殊处理：Suspense 边界
+    // Flight Encoder 将 Suspense 编码为 ['$', 'Suspense', key, {fallback, children}]
+    if (type === 'Suspense') {
+      // 注意：children 不应该在 props 中，而应该作为 createElement 的第三个参数
+      const { fallback, children, ...otherProps } = resolvedProps
+      return React.createElement(
+        React.Suspense,
+        {
+          ...otherProps,
+          key,
+          fallback
+        },
+        children
+      )
+    }
+
     // Client Component 引用 (如 '@1' -> 'M1')
     if (typeof type === 'string' && type.startsWith(FLIGHT_MARKERS.CLIENT_REF)) {
       const moduleId = type.replace('@', 'M')  // '@1' -> 'M1'

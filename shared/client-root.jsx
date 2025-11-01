@@ -6,10 +6,14 @@ import { RouterContext } from './router-context.jsx'
  *
  * 提供与客户端 Router 相同的组件结构：
  * - RouterContext.Provider
- * - ServerErrorBoundary（与客户端 ErrorBoundary 结构一致）
- * - Suspense
+ * - （不包裹 ErrorBoundary - 服务端不需要，会导致 hydration 不匹配）
  *
  * ⭐ 关键：确保服务端渲染和客户端水合时的 DOM 结构完全一致
+ *
+ * ⚠️ ErrorBoundary 只在客户端
+ * - 服务端错误会直接抛出到构建/渲染流程
+ * - 客户端 Router 会包裹 ErrorBoundary 来捕获运行时错误
+ * - 为了保证 hydration 一致性，服务端不包裹任何错误边界组件
  */
 
 // 默认的 RouterContext 值（服务端渲染时使用）
@@ -37,7 +41,7 @@ const DEFAULT_ROUTER_CONTEXT = {
  * - 只是一个透传组件，保证结构一致
  * - 客户端水合后，ErrorBoundary 会接管错误处理
  */
-class ServerErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component {
   render() {
     return this.props.children
   }
@@ -46,11 +50,11 @@ class ServerErrorBoundary extends React.Component {
 export function ClientRoot({ tree }) {
   return (
     <RouterContext.Provider value={DEFAULT_ROUTER_CONTEXT}>
-      <ServerErrorBoundary>
+      <ErrorBoundary>
         <Suspense fallback={<div />}>
           {tree}
         </Suspense>
-      </ServerErrorBoundary>
+      </ErrorBoundary>
     </RouterContext.Provider>
   )
 }
