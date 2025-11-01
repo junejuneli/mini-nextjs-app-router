@@ -65,7 +65,6 @@ export default function AboutPage() {
           <li>不支持完整的 Streaming SSR (使用简化版)</li>
           <li>不支持 API Routes</li>
           <li>不支持 Middleware</li>
-          <li>不支持完整的缓存策略</li>
         </ul>
 
         <p style={{ marginTop: '1rem' }}><strong>核心保留：</strong></p>

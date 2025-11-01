@@ -136,6 +136,17 @@ export class FlightEncoder {
     // Case 3: Server Component ⭐ 支持异步组件
     // 在服务端执行组件函数，获取渲染结果，继续编码
     try {
+      // 检查 type 是否是函数
+      if (typeof type !== 'function') {
+        console.error(`❌ [FlightEncoder] Invalid element type:`, {
+          type,
+          typeOf: typeof type,
+          props,
+          key
+        })
+        throw new TypeError(`type is not a function. Got: ${typeof type}`)
+      }
+
       let rendered = type(props)
 
       // 如果组件是异步的，等待它执行完成

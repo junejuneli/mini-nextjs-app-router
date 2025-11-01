@@ -28,9 +28,8 @@ export default function Loading() {
           border: '5px solid #ddd',
           borderTop: '5px solid #4CAF50',
           borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
           margin: '0 auto 20px'
-        }} />
+        }} className="spinner" />
 
         <h2>⏳ 加载中...</h2>
         <p style={{ color: '#666', fontSize: '14px' }}>
@@ -59,12 +58,6 @@ export default function Loading() {
         </ul>
       </div>
 
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   )
 }

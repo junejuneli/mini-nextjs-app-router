@@ -75,12 +75,14 @@ export const moduleMap: ModuleMap = {
  * 添加客户端特定的模块加载逻辑（支持动态 import）
  *
  * ⭐ 关键: 完全覆盖父类的 loadClientComponent() 方法
- * - 不依赖父类的环境检测逻辑
  * - 在浏览器中直接加载实际的 Client Components
  */
 class ClientFlightDecoder extends FlightDecoder {
   // TypeScript: 声明 moduleMap 属性类型
   declare moduleMap: ModuleMap
+
+  // ⭐ 缓存 React.lazy 组件，避免重复创建
+  private lazyComponentCache = new Map<string, React.LazyExoticComponent<any>>()
 
   loadClientComponent({ id, name }: { id: string; name: string }) {
     const loader = this.moduleMap[id]
@@ -93,17 +95,30 @@ class ClientFlightDecoder extends FlightDecoder {
     // ⭐ Lazy loader（函数）：使用 React.lazy 实现代码分割
     // 这是 Vite import.meta.glob() 默认行为
     if (typeof loader === 'function') {
-      const LazyComponent = React.lazy(async () => {
-        const module = await loader()
-        const Component = module[name] || module.default
+      // 使用 id+name 作为缓存 key
+      const cacheKey = `${id}#${name}`
 
-        if (!Component) {
-          throw new Error(`Export "${name}" not found in ${id}`)
-        }
+      // 检查缓存
+      let LazyComponent = this.lazyComponentCache.get(cacheKey)
 
-        // React.lazy 需要 default export
-        return { default: Component }
-      })
+      if (!LazyComponent) {
+        // 创建新的 LazyComponent
+        LazyComponent = React.lazy(async () => {
+          console.log(`📦 [LazyComponent] 加载模块: ${id}#${name}`)
+          const module = await loader()
+          const Component = module[name] || module.default
+
+          if (!Component) {
+            throw new Error(`Export "${name}" not found in ${id}`)
+          }
+
+          // React.lazy 需要 default export
+          return { default: Component }
+        })
+
+        // 缓存起来
+        this.lazyComponentCache.set(cacheKey, LazyComponent)
+      }
 
       return LazyComponent
     }

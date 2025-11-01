@@ -2,6 +2,7 @@ import React, { useState, useTransition, useCallback, useEffect, Suspense } from
 import { RouterContext } from '../shared/router-context.jsx'
 import { flightDecoder } from './module-map.ts'
 import { extractBodyChildren } from '../shared/extract-body.js'
+import { ErrorBoundary } from './ErrorBoundary.jsx'
 
 /**
  * Router Component - 管理客户端路由
@@ -47,7 +48,6 @@ export function Router({ initialTree, initialPathname }) {
   const navigate = useCallback(async href => {
     if (href === window.location.pathname) return
 
-    console.log(`🔀 [Router] 导航到: ${href}`)
     try {
       const newTree = await loadRoute(href)
       startTransition(() => {
@@ -78,9 +78,11 @@ export function Router({ initialTree, initialPathname }) {
 
   return (
     <RouterContext.Provider value={{ navigate, isPending }}>
-      <Suspense fallback={<div />}>
-        {currentTree}
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div />}>
+          {currentTree}
+        </Suspense>
+      </ErrorBoundary>
     </RouterContext.Provider>
   )
 }
