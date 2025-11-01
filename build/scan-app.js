@@ -104,16 +104,21 @@ function scanDirectory(dir, appDir, urlPath) {
           isClient: isClientComponent(entryPath)
         }
 
-        // 如果是 page.jsx，提取 revalidate 配置
+        // 如果是 page.jsx，提取 revalidate 和 dynamic 配置
         if (fileType === 'page') {
           node[fileType].revalidate = extractRevalidateConfig(entryPath)
+          node[fileType].dynamic = extractDynamicConfig(entryPath)
         }
 
         const revalidateInfo = node[fileType].revalidate !== undefined
           ? ` [revalidate: ${node[fileType].revalidate}]`
           : ''
 
-        console.log(`  ${fileType.padEnd(10)} ${relativePath} ${node[fileType].isClient ? '(Client)' : '(Server)'}${revalidateInfo}`)
+        const dynamicInfo = node[fileType].dynamic === 'force-dynamic'
+          ? ' [SSR]'
+          : ''
+
+        console.log(`  ${fileType.padEnd(10)} ${relativePath} ${node[fileType].isClient ? '(Client)' : '(Server)'}${revalidateInfo}${dynamicInfo}`)
       }
     }
     else if (entry.isDirectory()) {
@@ -216,6 +221,36 @@ function extractRevalidateConfig(filePath) {
     return undefined
   } catch (error) {
     console.warn(`提取 revalidate 配置失败: ${filePath}`, error.message)
+    return undefined
+  }
+}
+
+/**
+ * 提取 dynamic 配置
+ *
+ * 支持：
+ * - export const dynamic = 'force-dynamic' (强制 SSR)
+ * - export const dynamic = 'force-static' (强制 SSG)
+ * - export const dynamic = 'error' (禁止动态渲染)
+ * - export const dynamic = 'auto' (自动选择，默认)
+ *
+ * @param {string} filePath - 文件路径
+ * @returns {string|undefined} dynamic 配置值
+ */
+function extractDynamicConfig(filePath) {
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8')
+
+    // 匹配 export const dynamic = 'force-dynamic'
+    const match = content.match(/export\s+const\s+dynamic\s*=\s*['"]([^'"]+)['"]/);
+
+    if (match) {
+      return match[1]
+    }
+
+    return undefined
+  } catch (error) {
+    console.warn(`提取 dynamic 配置失败: ${filePath}`, error.message)
     return undefined
   }
 }

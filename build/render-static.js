@@ -146,8 +146,14 @@ export async function prerenderStaticRoutes(routeTree, clientComponentMap) {
  * @returns {Array} 静态路由列表
  */
 function collectStaticRoutes(node, path = [node], result = []) {
-  // 当前节点有 page.jsx 且不是动态路由
-  if (node.page && !node.dynamic) {
+  // 当前节点有 page.jsx 且不是动态路由 且不是 force-dynamic
+  // node.dynamic 有两个含义：
+  // 1. 路由段的 dynamic (来自 parseSegment) - 表示是否为动态路由如 [id]
+  // 2. 页面的 dynamic 配置 (来自 extractDynamicConfig) - 表示渲染模式
+  const isDynamicRoute = node.dynamic  // 动态路由如 [id]
+  const isForceDynamic = node.page?.dynamic === 'force-dynamic'  // SSR 配置
+
+  if (node.page && !isDynamicRoute && !isForceDynamic) {
     result.push({
       path: node.path,
       routePath: [...path]  // 完整路径（用于 Layout 嵌套）

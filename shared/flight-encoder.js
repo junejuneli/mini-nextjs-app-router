@@ -121,7 +121,19 @@ export class FlightEncoder {
       ]
     }
 
-    // Case 2: Client Component
+    // Case 2: React 内置组件 (Suspense, Fragment, etc.)
+    // 这些是 Symbol，需要特殊处理 - 渲染它们的 children
+    if (typeof type === 'symbol') {
+      // 对于 Suspense，在 SSG 时我们直接渲染 children (不显示 fallback)
+      // 对于 Fragment，也是直接渲染 children
+      if (props && props.children !== undefined) {
+        return await this.encodeValue(props.children)
+      }
+      // 如果没有 children，返回 null
+      return null
+    }
+
+    // Case 3: Client Component
     if (this.isClientComponent(type)) {
       const moduleRef = this.createModuleReference(type)
 

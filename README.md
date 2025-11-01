@@ -137,6 +137,13 @@ J0:["$","div",null,{"children":["$","@1",null,{"text":"Click"}]}]
    - 典型场景日志输出解析
    - 帮助理解客户端路由执行流程
 
+5. **[ROUTE_SCANNING_AND_CONFIG.md](./ROUTE_SCANNING_AND_CONFIG.md)** ⭐ 深度解析
+   - 路由扫描系统完整实现
+   - 配置提取机制（revalidate, dynamic）
+   - 配置传递流程（构建时 → 运行时）
+   - ISR 生命周期详解
+   - 与真实 Next.js 对比
+
 ### 📖 代码实现
 
 **核心源码**:
