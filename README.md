@@ -1,176 +1,318 @@
 # Mini Next.js App Router
 
-> 教学向的 Next.js App Router 实现，深入理解 React Server Components 和 Flight Protocol 原理
+> A minimal educational implementation of Next.js App Router with React Server Components and Flight Protocol
 
-## 核心特性
+English | [中文文档](./README_CN.md)
 
-- ✅ **React Server Components (RSC)** - Server/Client 组件混用
-- ✅ **RSC Flight Protocol** - 自定义序列化格式传输 React 树
-- ✅ **Streaming SSR** - 结合 Suspense 的流式渲染
-- ✅ **嵌套 Layout** - 自动布局嵌套 + 软导航
-- ✅ **文件系统路由** - app/ 目录约定式路由
-- ✅ **特殊文件** - loading.jsx, error.jsx, not-found.jsx
-- ✅ **动态路由** - [param] 和 [...catchAll]
+## 🎯 Learning Goals
 
-## 快速开始
+Understand how modern React Server Components and Next.js App Router work through a simplified implementation:
+
+- ✅ **React Server Components (RSC)** - Server/Client component composition
+- ✅ **Flight Protocol** - Custom serialization format for React trees
+- ✅ **Streaming SSR** - Progressive rendering with Suspense
+- ✅ **Nested Layouts** - Automatic layout nesting with soft navigation
+- ✅ **File-system Routing** - Convention-based routing from `app/` directory
+- ✅ **Special Files** - loading.jsx, error.jsx, not-found.jsx
+- ✅ **SSG & ISR** - Static generation with Incremental Static Regeneration
+
+## 🚀 Quick Start
 
 ```bash
-# 安装依赖
+# 1. Install dependencies
 npm install
 
-# 构建项目
+# 2. Build the project
 npm run build
 
-# 启动服务器
+# 3. Start the server
 npm start
 ```
 
-访问 http://localhost:3000
+Visit http://localhost:3000
 
-## 示例页面
+**Example pages to explore**:
+- `/` - Home (Server Component)
+- `/about` - About page (Server Component)
+- `/dashboard` - Dashboard (Client Component demo)
+- `/async-test` - Async data fetching (with loading.jsx)
+- `/isr-test` - ISR demo (10 second revalidate)
+- `/error-test` - Error handling (with error.jsx)
 
-项目包含多个示例页面，演示不同的 RSC 特性：
-
-- **`/`** - 首页（Server Component）
-- **`/about`** - 关于页面（Server Component）
-- **`/dashboard`** - 仪表盘（Client Component 示例）
-- **`/async-test`** - 异步数据获取（含 loading.jsx）
-- **`/isr-test`** - ISR 增量静态再生成（10 秒 revalidate）
-- **`/error-test`** - 错误处理（含 error.jsx）
-
-## 项目结构
+## 📁 Project Structure
 
 ```
 mini-nextjs-app-router/
-├── app/                    # 用户应用目录
-│   ├── layout.jsx         # Root Layout (必需)
-│   ├── page.jsx           # 首页
-│   └── ...
+├── app/                    # Application directory
+│   ├── layout.jsx         # Root Layout (required)
+│   ├── page.jsx           # Home page
+│   ├── loading.jsx        # Loading UI
+│   ├── error.jsx          # Error boundary
+│   └── .../               # More routes
 │
-├── build/                  # 构建系统
-│   ├── scan-app.js        # 扫描 app/ 目录
-│   └── ...
+├── build/                  # Build system
+│   ├── index.js           # Build orchestrator
+│   ├── scan-app.js        # Scan app/ directory
+│   ├── generate-routes.js # Generate route tree
+│   ├── render-static.js   # Pre-render static routes
+│   └── vite-build.js      # Vite build for client bundles
 │
-├── server/                 # 服务端运行时
-│   ├── index.js           # Express 服务器入口
-│   ├── regenerate.js      # ISR 重新生成逻辑
-│   └── ...
+├── server/                 # Server runtime
+│   ├── index.js           # Express server entry
+│   ├── router.js          # Route matcher
+│   ├── render-ssr.js      # SSR renderer
+│   ├── render-ssg.js      # SSG file server
+│   └── regenerate.js      # ISR regeneration logic
 │
-├── shared/                 # 服务端/客户端共享代码
-│   ├── flight-encoder.js  # Flight Protocol 编码器
-│   ├── flight-decoder.js  # Flight Protocol 解码器
-│   ├── rsc-renderer.js    # RSC 渲染器
-│   └── ...
+├── shared/                 # Server/Client shared code
+│   ├── flight-encoder.js  # Flight Protocol encoder
+│   ├── flight-decoder.js  # Flight Protocol decoder
+│   ├── rsc-renderer.js    # RSC renderer
+│   ├── metadata.js        # ISR metadata manager
+│   └── html-template.js   # HTML template generator
 │
-└── client/                 # 客户端运行时
-    ├── index.jsx          # 客户端入口（Hydration）
-    ├── router.jsx         # 客户端路由
-    ├── Link.jsx           # Link 组件
-    └── module-map.ts      # 模块映射表
+├── client/                 # Client runtime
+│   ├── index.jsx          # Client entry (Hydration)
+│   ├── router.jsx         # Client-side router
+│   ├── Link.jsx           # Link component
+│   ├── ErrorBoundary.jsx  # Error boundary
+│   └── module-map.ts      # Client component module map
+│
+└── .next/                  # Build output
+    ├── manifest.json      # Route manifest
+    ├── dist/              # Vite bundled assets
+    └── static/            # Pre-rendered pages
+        ├── pages/         # HTML files
+        └── flight/        # Flight payloads
 ```
 
-## 核心原理
+## 💡 Core Concepts
 
-### 1. React Server Components
+### React Server Components
 
-**Server Component** (默认):
-- 只在服务端执行
-- 可以直接访问数据库、文件系统
-- 不发送到客户端（Zero Bundle）
+**Server Component** (default):
+- Executes only on the server
+- Direct access to databases, file systems
+- Not sent to the client (Zero Bundle)
+- Cannot use hooks or browser APIs
 
 **Client Component** (`'use client'`):
-- 服务端预渲染 + 客户端 Hydration
-- 可以使用 useState, useEffect 等 Hooks
-- 发送到客户端，可交互
+- Pre-rendered on server + Hydrated on client
+- Can use useState, useEffect, event handlers
+- Sent to client for interactivity
 
-### 2. Flight Protocol
+### Flight Protocol
 
-序列化格式，用于传输包含 Server/Client 组件的 React 树：
+A serialization format for transmitting React trees with Server/Client components:
 
 ```
 M1:{"id":"./Button.jsx","chunks":["Button"],"name":"default"}
 J0:["$","div",null,{"children":["$","@1",null,{"text":"Click"}]}]
 ```
 
-- `M` = Module Reference (Client Component 引用)
-- `J` = JSON (普通数据)
-- `@1` = 引用 ID 为 1 的模块
+- `M` = Module Reference (Client Component reference)
+- `J` = JSON (regular data)
+- `@1` = Reference to module ID 1
 
-### 3. Streaming SSR
+### Streaming SSR
 
-结合 React 18 Suspense，实现渐进式内容传输：
+Progressive content delivery using React 18 Suspense:
 
 ```
-100ms → 发送 Shell (Layout + Loading)
-500ms → 发送部分内容 (Suspense 完成)
-用户立即看到框架，无需等待所有数据
+100ms → Send Shell (Layout + Loading)
+500ms → Stream content (Suspense resolved)
+User sees framework immediately, no need to wait for all data
 ```
 
-## 学习资源
+### ISR (Incremental Static Regeneration)
 
-### 📚 核心文档
+```jsx
+// app/isr-test/page.jsx
+export const revalidate = 60  // Revalidate every 60 seconds
 
-**必读文档** (建议按顺序阅读):
+export default function Page() {
+  return <div>{new Date().toISOString()}</div>
+}
+```
 
-1. **[CLIENT_COMPONENT_LOADING.md](./CLIENT_COMPONENT_LOADING.md)** ⭐ 重点
-   - Client Component 的 5 种加载时机详解
-   - SSR 初次加载、客户端导航、Link 预加载、动态导入、React.lazy
-   - 网络请求时间线分析
-   - 缓存机制详解
-   - 性能优化建议
+**How it works**:
+1. First request → Generate and cache
+2. Subsequent requests → Serve cached version (fast)
+3. After revalidate time → Return stale cache + regenerate in background
+4. Next request → Serve fresh content
 
-2. **[FLIGHT_PROTOCOL_DEEP_DIVE.md](./FLIGHT_PROTOCOL_DEEP_DIVE.md)**
-   - Flight Protocol 协议格式完整解析
-   - Module Reference 机制
-   - 编码器/解码器实现原理
-   - 与 JSON 序列化的对比
-   - 实际案例分析
+## 🔍 How It Works
 
-3. **[ARCHITECTURE.md](./ARCHITECTURE.md)**
-   - 项目整体架构说明
-   - React Server Components 核心概念
-   - 渲染流程详解
-   - 与真实 Next.js 对比
+### Build Process
 
-4. **[CONSOLE_LOGS.md](./CONSOLE_LOGS.md)**
-   - 控制台日志说明
-   - 典型场景日志输出解析
-   - 帮助理解客户端路由执行流程
+```
+1. Scan app/ directory → Extract routes and metadata
+2. Generate route tree → Create route matching rules
+3. Vite build → Bundle client components
+4. Pre-render static routes → Generate HTML + Flight payloads
+5. Save manifest.json → Route config for runtime
+```
 
-5. **[ROUTE_SCANNING_AND_CONFIG.md](./ROUTE_SCANNING_AND_CONFIG.md)** ⭐ 深度解析
-   - 路由扫描系统完整实现
-   - 配置提取机制（revalidate, dynamic）
-   - 配置传递流程（构建时 → 运行时）
-   - ISR 生命周期详解
-   - 与真实 Next.js 对比
+### Server Request Handling
 
-### 📖 代码实现
+```
+Request → Route matching → Check pre-rendered?
+                          ├─ Yes → Serve static file (SSG/ISR)
+                          │        └─ Check revalidate → Regenerate in background
+                          └─ No  → Dynamic render (SSR)
+                                   └─ Render RSC → Generate HTML/Flight
+```
 
-**核心源码**:
-- [shared/flight-encoder.js](./shared/flight-encoder.js) - Flight Protocol 编码器实现
-- [shared/flight-decoder.js](./shared/flight-decoder.js) - Flight Protocol 解码器实现
-- [client/module-map.ts](./client/module-map.ts) - 客户端模块映射（基于 FlightDecoder）
-- [shared/rsc-renderer.js](./shared/rsc-renderer.js) - RSC 渲染器
-- [build/scan-app.js](./build/scan-app.js) - app/ 目录扫描
-- [server/index.js](./server/index.js) - Express 服务器入口
+### Client Hydration
 
-### 🎯 学习路径
+```
+1. Browser receives HTML
+2. Load bundled JS
+3. Parse __NEXT_DATA__ (initial props)
+4. hydrateRoot() → Attach event listeners
+5. Interactive!
+```
 
-**入门**:
-1. 阅读本 README 了解项目概况
-2. 运行项目体验功能
-3. 阅读 `CLIENT_COMPONENT_LOADING.md` 理解加载机制
+### Client-Side Navigation
 
-**进阶**:
-4. 阅读 `FLIGHT_PROTOCOL_DEEP_DIVE.md` 深入协议原理
-5. 阅读 `THEME_SWITCHING_COMPARISON.md` 学习实战对比
-6. 查看源码实现细节
+```
+Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
+                                        → Parse Flight
+                                        → Load client components
+                                        → Update DOM (React transition)
+                                        → pushState (update URL)
+```
 
-**实践**:
-7. 修改 app/ 目录下的示例代码
-8. 创建自己的 Server/Client Components
-9. 实现新功能并观察 Flight Protocol 数据
+## 📖 Documentation
 
-## License
+**Core Documentation** (Recommended reading order):
+
+1. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ Essential
+   - 5 loading scenarios for Client Components
+   - SSR initial load, client navigation, prefetch, dynamic import, React.lazy
+   - Network request timeline analysis
+   - Caching mechanisms
+   - Performance optimization tips
+
+2. **[FLIGHT_PROTOCOL_DEEP_DIVE.md](./docs/FLIGHT_PROTOCOL_DEEP_DIVE.md)** ⭐ Deep Dive
+   - Complete Flight Protocol format specification
+   - Module Reference mechanism
+   - Encoder/Decoder implementation
+   - Comparison with JSON serialization
+   - Real-world examples
+
+3. **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)**
+   - Overall project architecture
+   - React Server Components concepts
+   - Rendering pipeline details
+   - Comparison with real Next.js
+
+4. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
+   - Route scanning system implementation
+   - Configuration extraction (revalidate, dynamic)
+   - Config flow: build time → runtime
+   - ISR lifecycle details
+
+5. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
+   - Next.js 15 caching strategies
+   - Four-layer cache architecture
+   - Mini Next.js implementation comparison
+   - Best practices
+
+## 🎓 Learning Path
+
+**Beginner**:
+1. Read this README to understand the project overview
+2. Run the project and explore example pages
+3. Read `CLIENT_COMPONENT_LOADING.md` for loading mechanisms
+4. Observe browser DevTools and console logs
+
+**Intermediate**:
+5. Read `FLIGHT_PROTOCOL_DEEP_DIVE.md` for protocol internals
+6. Read `ARCHITECTURE.md` for rendering pipeline
+7. Examine source code implementation
+8. Check `.next/` build output files
+
+**Advanced**:
+9. Modify `app/` examples and observe changes
+10. Create your own Server/Client Components
+11. Implement new features and trace Flight Protocol data
+12. Compare with real Next.js source code
+
+## 🆚 Comparison with Real Next.js
+
+### Features
+
+| Feature | Mini Next.js | Next.js 15 |
+|---------|--------------|------------|
+| **Code Size** | ~2000 lines | 500K+ lines |
+| **React Server Components** | ✅ Core implementation | ✅ Full implementation |
+| **Flight Protocol** | ✅ Basic encoder/decoder | ✅ Optimized streaming |
+| **File-system Routing** | ✅ app/ directory | ✅ + Advanced patterns |
+| **Streaming SSR** | ✅ With Suspense | ✅ + Selective hydration |
+| **ISR** | ✅ Time-based revalidation | ✅ + On-demand revalidation |
+| **Client Router** | ✅ Basic navigation | ✅ + Smart prefetching |
+| **Caching** | ⚠️ Basic (SSG/ISR only) | ✅ 4-layer cache system |
+| **Dynamic Routes** | ❌ Not implemented | ✅ [param] and [...slug] |
+| **Middleware** | ❌ Not implemented | ✅ Full middleware support |
+| **Image/Font Optimization** | ❌ Not implemented | ✅ Automatic optimization |
+
+### Caching Layers
+
+| Cache Layer | Mini Next.js | Next.js 15 |
+|-------------|--------------|------------|
+| Request Memoization | ❌ 0% | ✅ 100% |
+| Data Cache | ❌ 0% | ✅ 100% |
+| Full Route Cache | ⚠️ 60% (SSG/ISR) | ✅ 100% |
+| Router Cache | ⚠️ 40% (basic routing) | ✅ 100% |
+
+> See `NEXTJS_CACHING_STRATEGIES.md` for detailed comparison
+
+## 💡 What You'll Learn
+
+**Core Principles**:
+- How React Server Components separate server/client execution
+- Flight Protocol serialization and deserialization
+- Streaming SSR and progressive hydration
+- Client-side routing in RSC architecture
+- ISR implementation and cache strategies
+
+**Implementation Details**:
+- Route scanning and manifest generation
+- RSC rendering pipeline
+- Client component loading and lazy loading
+- Error boundaries and Suspense integration
+- Build-time vs runtime behavior
+
+**Tech Stack**: React 18 + Vite + Express + ESM
+
+## 📝 Educational Note
+
+This is an **educational project** focused on core concepts, intentionally omitting production complexities:
+
+- ✅ Core RSC and Flight Protocol mechanics
+- ✅ Basic SSG/ISR implementation
+- ✅ Fundamental routing and navigation
+- ❌ Production-grade optimizations
+- ❌ Complete error handling
+- ❌ Advanced caching strategies
+- ❌ Dynamic routes with parameters
+- ❌ Middleware and API routes
+
+**Goal**: Understand Next.js App Router fundamentals with minimal, readable code
+
+## 📚 References
+
+- [React Server Components RFC](https://github.com/reactjs/rfcs/blob/main/text/0188-server-components.md)
+- [Next.js App Router Documentation](https://nextjs.org/docs/app)
+- [React 18 Streaming SSR](https://react.dev/reference/react-dom/server/renderToReadableStream)
+
+## 📄 License
 
 MIT
+
+---
+
+**Happy Learning! 🎉**
+
+Understand Next.js App Router by building it from scratch!
