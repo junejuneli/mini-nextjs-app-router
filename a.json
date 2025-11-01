@@ -1,0 +1,915 @@
+{
+    "type": "html",
+    "key": "null",
+    "ref": null,
+    "props": {
+        "lang": "zh-CN",
+        "children": [
+            {
+                "type": "head",
+                "key": "null",
+                "ref": null,
+                "props": {
+                    "children": [
+                        {
+                            "type": "meta",
+                            "key": "null",
+                            "ref": null,
+                            "props": {
+                                "charSet": "UTF-8"
+                            },
+                            "_owner": null
+                        },
+                        {
+                            "type": "meta",
+                            "key": "null",
+                            "ref": null,
+                            "props": {
+                                "name": "viewport",
+                                "content": "width=device-width, initial-scale=1.0"
+                            },
+                            "_owner": null
+                        },
+                        {
+                            "type": "title",
+                            "key": "null",
+                            "ref": null,
+                            "props": {
+                                "children": "Mini Next.js App Router"
+                            },
+                            "_owner": null
+                        },
+                        {
+                            "type": "style",
+                            "key": "null",
+                            "ref": null,
+                            "props": {
+                                "children": "\n          * {\n            margin: 0;\n            padding: 0;\n            box-sizing: border-box;\n          }\n\n          body {\n            font-family: system-ui, -apple-system, sans-serif;\n            line-height: 1.6;\n            color: #333;\n          }\n\n          .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 20px;\n          }\n\n          nav {\n            background: #0070f3;\n            color: white;\n            padding: 1rem 0;\n            margin-bottom: 2rem;\n          }\n\n          nav ul {\n            list-style: none;\n            display: flex;\n            gap: 2rem;\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 0 20px;\n          }\n\n          nav a {\n            color: white;\n            text-decoration: none;\n            font-weight: 500;\n          }\n\n          nav a:hover {\n            text-decoration: underline;\n          }\n\n          h1 {\n            color: #0070f3;\n            margin-bottom: 1rem;\n          }\n\n          .card {\n            background: #f5f5f5;\n            padding: 1.5rem;\n            border-radius: 8px;\n            margin: 1rem 0;\n          }\n\n          button {\n            background: #0070f3;\n            color: white;\n            border: none;\n            padding: 0.75rem 1.5rem;\n            border-radius: 4px;\n            cursor: pointer;\n            font-size: 1rem;\n            font-weight: 500;\n          }\n\n          button:hover {\n            background: #0051cc;\n          }\n\n          .badge {\n            display: inline-block;\n            padding: 0.25rem 0.75rem;\n            background: #10b981;\n            color: white;\n            border-radius: 12px;\n            font-size: 0.875rem;\n            font-weight: 600;\n          }\n        "
+                            },
+                            "_owner": null
+                        }
+                    ]
+                },
+                "_owner": null
+            },
+            {
+                "type": "body",
+                "key": "null",
+                "ref": null,
+                "props": {
+                    "children": [
+                        {
+                            "type": "nav",
+                            "key": "null",
+                            "ref": null,
+                            "props": {
+                                "children": {
+                                    "type": "ul",
+                                    "key": "null",
+                                    "ref": null,
+                                    "props": {
+                                        "children": [
+                                            {
+                                                "type": "li",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "children": {
+                                                        "type": {
+                                                            "_payload": {
+                                                                "_status": 1,
+                                                                "_result": {}
+                                                            }
+                                                        },
+                                                        "key": "null",
+                                                        "ref": null,
+                                                        "props": {
+                                                            "href": "/",
+                                                            "children": "首页"
+                                                        },
+                                                        "_owner": null
+                                                    }
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "li",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "children": {
+                                                        "type": {
+                                                            "_payload": {
+                                                                "_status": 1,
+                                                                "_result": {}
+                                                            }
+                                                        },
+                                                        "key": "null",
+                                                        "ref": null,
+                                                        "props": {
+                                                            "href": "/about",
+                                                            "children": "关于"
+                                                        },
+                                                        "_owner": null
+                                                    }
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "li",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "children": {
+                                                        "type": {
+                                                            "_payload": {
+                                                                "_status": 1,
+                                                                "_result": {}
+                                                            }
+                                                        },
+                                                        "key": "null",
+                                                        "ref": null,
+                                                        "props": {
+                                                            "href": "/dashboard",
+                                                            "children": "仪表盘 (Client)"
+                                                        },
+                                                        "_owner": null
+                                                    }
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "li",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "children": {
+                                                        "type": {
+                                                            "_payload": {
+                                                                "_status": 1,
+                                                                "_result": {}
+                                                            }
+                                                        },
+                                                        "key": "null",
+                                                        "ref": null,
+                                                        "props": {
+                                                            "href": "/async-test",
+                                                            "children": "异步测试"
+                                                        },
+                                                        "_owner": null
+                                                    }
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "li",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "children": {
+                                                        "type": {
+                                                            "_payload": {
+                                                                "_status": 1,
+                                                                "_result": {}
+                                                            }
+                                                        },
+                                                        "key": "null",
+                                                        "ref": null,
+                                                        "props": {
+                                                            "href": "/isr-test",
+                                                            "children": "ISR 测试"
+                                                        },
+                                                        "_owner": null
+                                                    }
+                                                },
+                                                "_owner": null
+                                            }
+                                        ]
+                                    },
+                                    "_owner": null
+                                }
+                            },
+                            "_owner": null
+                        },
+                        {
+                            "type": "div",
+                            "key": "null",
+                            "ref": null,
+                            "props": {
+                                "className": "container",
+                                "children": {
+                                    "type": "div",
+                                    "key": "null",
+                                    "ref": null,
+                                    "props": {
+                                        "children": [
+                                            {
+                                                "type": "h1",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "children": "🔄 ISR (Incremental Static Regeneration) 测试"
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "div",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "className": "card",
+                                                    "children": [
+                                                        {
+                                                            "type": "h2",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "children": "⏰ 生成时间"
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "p",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "style": {
+                                                                    "fontSize": "1.5rem",
+                                                                    "fontFamily": "monospace",
+                                                                    "color": "#0070f3"
+                                                                },
+                                                                "children": "2025-11-01T13:50:16.251Z"
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "p",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "style": {
+                                                                    "marginTop": "0.5rem",
+                                                                    "color": "#666"
+                                                                },
+                                                                "children": "这是页面在服务端生成的时间"
+                                                            },
+                                                            "_owner": null
+                                                        }
+                                                    ]
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "div",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "className": "card",
+                                                    "children": [
+                                                        {
+                                                            "type": "h2",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "children": "🎯 ISR 工作原理"
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "p",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "children": [
+                                                                    "本页面配置了 ",
+                                                                    {
+                                                                        "type": "code",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "style": {
+                                                                                "background": "#f0f0f0",
+                                                                                "padding": "0.25rem 0.5rem",
+                                                                                "borderRadius": "4px"
+                                                                            },
+                                                                            "children": "revalidate = 10"
+                                                                        },
+                                                                        "_owner": null
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "ol",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "style": {
+                                                                    "paddingLeft": "1.5rem",
+                                                                    "marginTop": "1rem",
+                                                                    "lineHeight": "1.8"
+                                                                },
+                                                                "children": [
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "strong",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": "首次访问"
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                },
+                                                                                ": 返回构建时预渲染的页面"
+                                                                            ]
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "strong",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": "10秒内再次访问"
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                },
+                                                                                ": 直接返回缓存"
+                                                                            ]
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "strong",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": "10秒后访问"
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                },
+                                                                                ":",
+                                                                                {
+                                                                                    "type": "ul",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "style": {
+                                                                                            "paddingLeft": "1.5rem",
+                                                                                            "marginTop": "0.5rem"
+                                                                                        },
+                                                                                        "children": [
+                                                                                            {
+                                                                                                "type": "li",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "children": "立即返回旧的缓存页面(Stale-while-revalidate)"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "li",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "children": "后台触发重新生成"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "strong",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": "重新生成后访问"
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                },
+                                                                                ": 返回新生成的页面"
+                                                                            ]
+                                                                        },
+                                                                        "_owner": null
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "_owner": null
+                                                        }
+                                                    ]
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "div",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "className": "card",
+                                                    "children": [
+                                                        {
+                                                            "type": "h2",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "children": "🧪 测试步骤"
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "ol",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "style": {
+                                                                    "paddingLeft": "1.5rem",
+                                                                    "marginTop": "1rem",
+                                                                    "lineHeight": "1.8"
+                                                                },
+                                                                "children": [
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": "记录当前显示的时间"
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": "刷新页面多次 → 时间不变(使用缓存)"
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": "等待 10 秒后刷新 → 返回旧时间 + 后台重新生成"
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": "再次刷新 → 显示新时间"
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "li",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": "检查服务器日志，查看重新生成过程"
+                                                                        },
+                                                                        "_owner": null
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "_owner": null
+                                                        }
+                                                    ]
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "div",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "style": {
+                                                        "marginTop": "2rem",
+                                                        "padding": "1rem",
+                                                        "background": "#e7f3ff",
+                                                        "borderLeft": "4px solid #0070f3",
+                                                        "borderRadius": "4px"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "strong",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "children": "💡 优化提示"
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "p",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "style": {
+                                                                    "marginTop": "0.5rem",
+                                                                    "fontSize": "0.875rem"
+                                                                },
+                                                                "children": [
+                                                                    "ISR 结合了 SSG 的性能和 SSR 的实时性：",
+                                                                    {
+                                                                        "type": "br",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {},
+                                                                        "_owner": null
+                                                                    },
+                                                                    "• 用户始终获得快速响应(使用缓存)",
+                                                                    {
+                                                                        "type": "br",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {},
+                                                                        "_owner": null
+                                                                    },
+                                                                    "• 内容定期更新(后台重新生成)",
+                                                                    {
+                                                                        "type": "br",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {},
+                                                                        "_owner": null
+                                                                    },
+                                                                    "• 服务器负载低(大部分请求使用缓存)"
+                                                                ]
+                                                            },
+                                                            "_owner": null
+                                                        }
+                                                    ]
+                                                },
+                                                "_owner": null
+                                            },
+                                            {
+                                                "type": "div",
+                                                "key": "null",
+                                                "ref": null,
+                                                "props": {
+                                                    "style": {
+                                                        "marginTop": "1rem",
+                                                        "padding": "1rem",
+                                                        "background": "#fffbeb",
+                                                        "borderLeft": "4px solid #f59e0b",
+                                                        "borderRadius": "4px"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "type": "strong",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "children": "📊 对比其他渲染模式"
+                                                            },
+                                                            "_owner": null
+                                                        },
+                                                        {
+                                                            "type": "table",
+                                                            "key": "null",
+                                                            "ref": null,
+                                                            "props": {
+                                                                "style": {
+                                                                    "width": "100%",
+                                                                    "marginTop": "0.5rem",
+                                                                    "fontSize": "0.875rem"
+                                                                },
+                                                                "children": [
+                                                                    {
+                                                                        "type": "thead",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": {
+                                                                                "type": "tr",
+                                                                                "key": "null",
+                                                                                "ref": null,
+                                                                                "props": {
+                                                                                    "style": {
+                                                                                        "borderBottom": "2px solid #ddd"
+                                                                                    },
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "type": "th",
+                                                                                            "key": "null",
+                                                                                            "ref": null,
+                                                                                            "props": {
+                                                                                                "style": {
+                                                                                                    "textAlign": "left",
+                                                                                                    "padding": "0.5rem"
+                                                                                                },
+                                                                                                "children": "模式"
+                                                                                            },
+                                                                                            "_owner": null
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "th",
+                                                                                            "key": "null",
+                                                                                            "ref": null,
+                                                                                            "props": {
+                                                                                                "style": {
+                                                                                                    "textAlign": "left",
+                                                                                                    "padding": "0.5rem"
+                                                                                                },
+                                                                                                "children": "速度"
+                                                                                            },
+                                                                                            "_owner": null
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "th",
+                                                                                            "key": "null",
+                                                                                            "ref": null,
+                                                                                            "props": {
+                                                                                                "style": {
+                                                                                                    "textAlign": "left",
+                                                                                                    "padding": "0.5rem"
+                                                                                                },
+                                                                                                "children": "实时性"
+                                                                                            },
+                                                                                            "_owner": null
+                                                                                        },
+                                                                                        {
+                                                                                            "type": "th",
+                                                                                            "key": "null",
+                                                                                            "ref": null,
+                                                                                            "props": {
+                                                                                                "style": {
+                                                                                                    "textAlign": "left",
+                                                                                                    "padding": "0.5rem"
+                                                                                                },
+                                                                                                "children": "服务器负载"
+                                                                                            },
+                                                                                            "_owner": null
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "_owner": null
+                                                                            }
+                                                                        },
+                                                                        "_owner": null
+                                                                    },
+                                                                    {
+                                                                        "type": "tbody",
+                                                                        "key": "null",
+                                                                        "ref": null,
+                                                                        "props": {
+                                                                            "children": [
+                                                                                {
+                                                                                    "type": "tr",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": [
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": {
+                                                                                                        "type": "strong",
+                                                                                                        "key": "null",
+                                                                                                        "ref": null,
+                                                                                                        "props": {
+                                                                                                            "children": "SSG"
+                                                                                                        },
+                                                                                                        "_owner": null
+                                                                                                    }
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "⚡⚡⚡"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "❌"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "⚡"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                },
+                                                                                {
+                                                                                    "type": "tr",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": [
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": {
+                                                                                                        "type": "strong",
+                                                                                                        "key": "null",
+                                                                                                        "ref": null,
+                                                                                                        "props": {
+                                                                                                            "children": "ISR (本页)"
+                                                                                                        },
+                                                                                                        "_owner": null
+                                                                                                    }
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "⚡⚡⚡"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "✅"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "⚡"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                },
+                                                                                {
+                                                                                    "type": "tr",
+                                                                                    "key": "null",
+                                                                                    "ref": null,
+                                                                                    "props": {
+                                                                                        "children": [
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": {
+                                                                                                        "type": "strong",
+                                                                                                        "key": "null",
+                                                                                                        "ref": null,
+                                                                                                        "props": {
+                                                                                                            "children": "SSR"
+                                                                                                        },
+                                                                                                        "_owner": null
+                                                                                                    }
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "⚡"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "✅✅"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "td",
+                                                                                                "key": "null",
+                                                                                                "ref": null,
+                                                                                                "props": {
+                                                                                                    "style": {
+                                                                                                        "padding": "0.5rem"
+                                                                                                    },
+                                                                                                    "children": "🔥🔥"
+                                                                                                },
+                                                                                                "_owner": null
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "_owner": null
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "_owner": null
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "_owner": null
+                                                        }
+                                                    ]
+                                                },
+                                                "_owner": null
+                                            }
+                                        ]
+                                    },
+                                    "_owner": null
+                                }
+                            },
+                            "_owner": null
+                        }
+                    ]
+                },
+                "_owner": null
+            }
+        ]
+    },
+    "_owner": null
+}
