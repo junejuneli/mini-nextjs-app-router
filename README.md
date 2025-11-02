@@ -15,6 +15,8 @@ Understand how modern React Server Components and Next.js App Router work throug
 - ✅ **File-system Routing** - Convention-based routing from `app/` directory
 - ✅ **Special Files** - loading.jsx, error.jsx, not-found.jsx
 - ✅ **SSG & ISR** - Static generation with Incremental Static Regeneration
+- ✅ **Dynamic Routes** - [param] syntax with generateStaticParams()
+- ✅ **Route Groups** - (folder) syntax for code organization
 
 ## 🚀 Quick Start
 
@@ -34,10 +36,15 @@ Visit http://localhost:3000
 **Example pages to explore**:
 - `/` - Home (Server Component)
 - `/about` - About page (Server Component)
-- `/dashboard` - Dashboard (Client Component demo)
+- `/blog` - Blog list (Dynamic routes demo)
+- `/blog/react-server-components` - Blog post ([slug] dynamic route)
+- `/pricing` - Pricing page (Route groups demo)
+- `/dashboard` - Dashboard (Nested layouts + Client Component)
+- `/dashboard/settings` - Settings (Nested route)
 - `/async-test` - Async data fetching (with loading.jsx)
 - `/isr-test` - ISR demo (10 second revalidate)
 - `/error-test` - Error handling (with error.jsx)
+- `/404-test` - Not found handling (with not-found.jsx)
 
 ## 📁 Project Structure
 
@@ -253,7 +260,7 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
 | **ISR** | ✅ Time-based revalidation | ✅ + On-demand revalidation |
 | **Client Router** | ✅ Basic navigation | ✅ + Smart prefetching |
 | **Caching** | ⚠️ Basic (SSG/ISR only) | ✅ 4-layer cache system |
-| **Dynamic Routes** | ❌ Not implemented | ✅ [param] and [...slug] |
+| **Dynamic Routes** | ✅ [param] with generateStaticParams | ✅ [param] and [...slug] |
 | **Middleware** | ❌ Not implemented | ✅ Full middleware support |
 | **Image/Font Optimization** | ❌ Not implemented | ✅ Automatic optimization |
 
@@ -293,10 +300,12 @@ This is an **educational project** focused on core concepts, intentionally omitt
 - ✅ Core RSC and Flight Protocol mechanics
 - ✅ Basic SSG/ISR implementation
 - ✅ Fundamental routing and navigation
+- ✅ Dynamic routes with [param] syntax
+- ✅ Route groups for code organization
 - ❌ Production-grade optimizations
 - ❌ Complete error handling
 - ❌ Advanced caching strategies
-- ❌ Dynamic routes with parameters
+- ❌ Catch-all routes [...slug]
 - ❌ Middleware and API routes
 
 **Goal**: Understand Next.js App Router fundamentals with minimal, readable code
