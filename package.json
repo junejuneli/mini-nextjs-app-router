@@ -4,8 +4,8 @@
   "description": "A minimal implementation of Next.js App Router with RSC Flight Protocol",
   "type": "module",
   "scripts": {
-    "build": "tsx build/index.js",
-    "start": "tsx server/index.js",
+    "build": "tsx build/index.ts",
+    "start": "tsx server/index.ts",
     "dev": "npm run build && npm start",
     "clean": "rm -rf .next",
     "typecheck": "tsc --noEmit",

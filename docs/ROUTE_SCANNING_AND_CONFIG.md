@@ -22,7 +22,7 @@
 路由扫描是 Next.js App Router 的**构建时**核心功能：
 
 1. **递归遍历** `app/` 目录
-2. **识别特殊文件**：`page.jsx`、`layout.jsx`、`loading.jsx`、`error.jsx`
+2. **识别特殊文件**：`page.tsx`、`layout.tsx`、`loading.tsx`、`error.tsx`
 3. **提取路由参数**：`[id]`、`[...slug]`
 4. **构建路由树**：反映嵌套的 Layout 和 Page 关系
 5. **提取配置**：`revalidate`、`dynamic` 等
@@ -52,20 +52,20 @@
 
 ```
 app/
-├── layout.jsx              → / (Root Layout)
-├── page.jsx                → / (首页)
+├── layout.tsx              → / (Root Layout)
+├── page.tsx                → / (首页)
 ├── about/
-│   └── page.jsx            → /about
+│   └── page.tsx            → /about
 ├── blog/
-│   ├── layout.jsx          → /blog/* (Blog Layout)
+│   ├── layout.tsx          → /blog/* (Blog Layout)
 │   ├── [id]/
-│   │   └── page.jsx        → /blog/[id] (动态路由)
+│   │   └── page.tsx        → /blog/[id] (动态路由)
 │   └── [...slug]/
-│       └── page.jsx        → /blog/[...slug] (Catch-all)
+│       └── page.tsx        → /blog/[...slug] (Catch-all)
 └── dashboard/
-    ├── page.jsx            → /dashboard
+    ├── page.tsx            → /dashboard
     └── settings/
-        └── page.jsx        → /dashboard/settings
+        └── page.tsx        → /dashboard/settings
 ```
 
 ### 路由树数据结构
@@ -82,22 +82,22 @@ app/
 
   // 特殊文件
   layout: {
-    file: 'app/layout.jsx',           // 相对路径
+    file: 'app/layout.tsx',           // 相对路径
     absolutePath: '/project/app/...',  // 绝对路径
     isClient: false                    // 是否 Client Component
   },
 
   page: {
-    file: 'app/page.jsx',
-    absolutePath: '/project/app/page.jsx',
+    file: 'app/page.tsx',
+    absolutePath: '/project/app/page.tsx',
     isClient: false,
     revalidate: undefined,    // ISR 配置
     dynamic: undefined        // 渲染模式配置
   },
 
-  loading: { /* ... */ },     // loading.jsx
-  error: { /* ... */ },       // error.jsx
-  notFound: { /* ... */ },    // not-found.jsx
+  loading: { /* ... */ },     // loading.tsx
+  error: { /* ... */ },       // error.tsx
+  notFound: { /* ... */ },    // not-found.tsx
 
   // 子路由
   children: [
@@ -122,7 +122,7 @@ app/
 #### 第 1 步：递归遍历目录
 
 ```javascript
-// build/scan-app.js
+// build/scan-app.ts
 function scanDirectory(dir, appDir, urlPath) {
   const entries = fs.readdirSync(dir, { withFileTypes: true })
 
@@ -151,15 +151,15 @@ function scanDirectory(dir, appDir, urlPath) {
 
 ```javascript
 const SPECIAL_FILES = {
-  'page.jsx': 'page',
+  'page.tsx': 'page',
   'page.js': 'page',
-  'layout.jsx': 'layout',
+  'layout.tsx': 'layout',
   'layout.js': 'layout',
-  'loading.jsx': 'loading',
+  'loading.tsx': 'loading',
   'loading.js': 'loading',
-  'error.jsx': 'error',
+  'error.tsx': 'error',
   'error.js': 'error',
-  'not-found.jsx': 'notFound',
+  'not-found.tsx': 'notFound',
   'not-found.js': 'notFound'
 }
 
@@ -246,7 +246,7 @@ function buildUrlPath(parentPath, segment) {
 #### 1. `revalidate` - ISR 配置 ✅ 已实现
 
 ```javascript
-// app/blog/page.jsx
+// app/blog/page.tsx
 export const revalidate = 60  // 每 60 秒重新验证
 
 export default function BlogPage() {
@@ -260,12 +260,12 @@ export default function BlogPage() {
 - `number` - ISR，每 N 秒后台重新生成
 - `false` - 强制每次重新渲染（SSR）
 
-**实现文件**：`build/scan-app.js` - `extractRevalidateConfig()`
+**实现文件**：`build/scan-app.ts` - `extractRevalidateConfig()`
 
 #### 2. `dynamic` - 渲染模式配置 ✅ 已实现
 
 ```javascript
-// app/dashboard/page.jsx
+// app/dashboard/page.tsx
 export const dynamic = 'force-dynamic'  // 强制 SSR
 
 export default function DashboardPage() {
@@ -280,7 +280,7 @@ export default function DashboardPage() {
 - `'force-dynamic'` - 强制 SSR（已测试）
 - `'error'` - 禁止动态渲染，抛错
 
-**实现文件**：`build/scan-app.js` - `extractDynamicConfig()`
+**实现文件**：`build/scan-app.ts` - `extractDynamicConfig()`
 
 #### 3. 未实现的配置（真实 Next.js 支持）
 
@@ -334,7 +334,7 @@ function extractDynamicConfig(filePath) {
 扫描时立即提取并存储在路由节点：
 
 ```javascript
-// build/scan-app.js
+// build/scan-app.ts
 if (fileType === 'page') {
   node[fileType] = {
     file: relativePath,
@@ -356,7 +356,7 @@ if (fileType === 'page') {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ 1. 构建时（build/index.js）                                 │
+│ 1. 构建时（build/index.ts）                                 │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌──────────────┐                                           │
@@ -404,7 +404,7 @@ if (fileType === 'page') {
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
-│ 2. 运行时（server/index.js）                                │
+│ 2. 运行时（server/index.ts）                                │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
 │  ┌──────────────┐                                           │
@@ -455,11 +455,11 @@ if (fileType === 'page') {
 
 | 文件 | 阶段 | 职责 |
 |------|------|------|
-| `build/scan-app.js` | 构建时 | 扫描目录、提取配置、构建路由树 |
-| `build/render-static.js` | 构建时 | 预渲染静态页面、保存元数据 |
-| `shared/metadata.js` | 构建+运行时 | 保存/读取元数据（revalidate 等） |
-| `server/index.js` | 运行时 | 加载 manifest、处理请求、ISR 判断 |
-| `server/regenerate.js` | 运行时 | ISR 后台重新生成 |
+| `build/scan-app.ts` | 构建时 | 扫描目录、提取配置、构建路由树 |
+| `build/render-static.ts` | 构建时 | 预渲染静态页面、保存元数据 |
+| `shared/metadata.ts` | 构建+运行时 | 保存/读取元数据（revalidate 等） |
+| `server/index.ts` | 运行时 | 加载 manifest、处理请求、ISR 判断 |
+| `server/regenerate.ts` | 运行时 | ISR 后台重新生成 |
 
 ---
 
@@ -470,7 +470,7 @@ if (fileType === 'page') {
 **代码**：
 
 ```javascript
-// app/blog/page.jsx
+// app/blog/page.tsx
 export const revalidate = 60  // ISR: 60 秒
 
 export default async function BlogPage() {
@@ -494,7 +494,7 @@ export default async function BlogPage() {
    {
      path: '/blog',
      page: {
-       file: 'app/blog/page.jsx',
+       file: 'app/blog/page.tsx',
        revalidate: 60,  // ← 提取配置
        dynamic: undefined
      }
@@ -564,7 +564,7 @@ T=70   用户访问 /blog
 **代码**：
 
 ```javascript
-// app/dashboard/page.jsx
+// app/dashboard/page.tsx
 export const dynamic = 'force-dynamic'  // 强制 SSR
 
 export default async function DashboardPage() {
@@ -579,7 +579,7 @@ export default async function DashboardPage() {
 {
   path: '/dashboard',
   page: {
-    file: 'app/dashboard/page.jsx',
+    file: 'app/dashboard/page.tsx',
     dynamic: 'force-dynamic'  // ← 提取配置
   }
 }
@@ -618,15 +618,15 @@ app.get('/dashboard', async (req, res) => {
 
 ```
 app/
-├── layout.jsx              (Root Layout)
-├── page.jsx                (SSG, 首页)
+├── layout.tsx              (Root Layout)
+├── page.tsx                (SSG, 首页)
 ├── blog/
-│   ├── layout.jsx          (Blog Layout)
-│   ├── page.jsx            (ISR, revalidate: 60)
+│   ├── layout.tsx          (Blog Layout)
+│   ├── page.tsx            (ISR, revalidate: 60)
 │   └── [id]/
-│       └── page.jsx        (动态路由, 不预渲染)
+│       └── page.tsx        (动态路由, 不预渲染)
 └── dashboard/
-    └── page.jsx            (SSR, dynamic: 'force-dynamic')
+    └── page.tsx            (SSR, dynamic: 'force-dynamic')
 ```
 
 **扫描结果**：
@@ -634,28 +634,28 @@ app/
 ```javascript
 {
   path: '/',
-  layout: { file: 'app/layout.jsx' },
-  page: { file: 'app/page.jsx', revalidate: undefined },  // SSG
+  layout: { file: 'app/layout.tsx' },
+  page: { file: 'app/page.tsx', revalidate: undefined },  // SSG
   children: [
     {
       path: '/blog',
-      layout: { file: 'app/blog/layout.jsx' },
+      layout: { file: 'app/blog/layout.tsx' },
       page: {
-        file: 'app/blog/page.jsx',
+        file: 'app/blog/page.tsx',
         revalidate: 60  // ISR
       },
       children: [
         {
           path: '/blog/[id]',
           dynamic: true,  // 动态路由
-          page: { file: 'app/blog/[id]/page.jsx' }
+          page: { file: 'app/blog/[id]/page.tsx' }
         }
       ]
     },
     {
       path: '/dashboard',
       page: {
-        file: 'app/dashboard/page.jsx',
+        file: 'app/dashboard/page.tsx',
         dynamic: 'force-dynamic'  // SSR
       }
     }
@@ -745,7 +745,7 @@ collectStaticRoutes(routeTree)
 ```javascript
 // 运行时读取 (不推荐)
 app.get('/blog', async (req, res) => {
-  const pageModule = await import('./app/blog/page.jsx')
+  const pageModule = await import('./app/blog/page.tsx')
   const revalidate = pageModule.revalidate  // ← 运行时获取
 
   if (shouldRevalidate(revalidate)) {
@@ -876,9 +876,9 @@ export const revalidate = process.env.NODE_ENV === 'production' ? 60 : 0
 ### 学习建议
 
 1. **阅读源码**：
-   - `build/scan-app.js` - 路由扫描
-   - `build/render-static.js` - SSG 预渲染
-   - `server/index.js` - 运行时路由
+   - `build/scan-app.ts` - 路由扫描
+   - `build/render-static.ts` - SSG 预渲染
+   - `server/index.ts` - 运行时路由
 
 2. **实验修改**：
    - 添加新的配置类型（如 `export const fetchCache = 'force-cache'`）
@@ -898,7 +898,7 @@ export const revalidate = process.env.NODE_ENV === 'production' ? 60 : 0
 - [Next.js App Router 文档](https://nextjs.org/docs/app)
 - [ISR 详解](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating)
 - [Route Segment Config](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)
-- 本项目源码：`build/scan-app.js`, `build/render-static.js`
+- 本项目源码：`build/scan-app.ts`, `build/render-static.ts`
 
 ---
 
@@ -908,8 +908,8 @@ export const revalidate = process.env.NODE_ENV === 'production' ? 60 : 0
 
 | 配置项 | 状态 | 文件位置 | 说明 |
 |--------|------|----------|------|
-| `revalidate` | ✅ 完整实现 | `build/scan-app.js:208` | ISR 时间控制，支持数字和 false |
-| `dynamic` | ✅ 完整实现 | `build/scan-app.js:240` | 渲染模式控制，支持 4 种选项 |
+| `revalidate` | ✅ 完整实现 | `build/scan-app.ts:208` | ISR 时间控制，支持数字和 false |
+| `dynamic` | ✅ 完整实现 | `build/scan-app.ts:240` | 渲染模式控制，支持 4 种选项 |
 
 ### Next.js 官方配置（未实现）
 

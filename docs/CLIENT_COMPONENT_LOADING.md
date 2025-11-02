@@ -73,7 +73,7 @@ Client Components:
 ### 示例代码
 
 ```javascript
-// app/layout.jsx (Server Component)
+// app/layout.tsx (Server Component)
 import ThemeProvider from '@/components/ThemeProvider'
 import Header from '@/components/Header'
 
@@ -147,7 +147,7 @@ export default function LoginButton() {
   )
 }
 
-// app/page.jsx (Server Component)
+// app/page.tsx (Server Component)
 import Counter from '@/components/Counter'
 
 export default function HomePage() {
@@ -295,7 +295,7 @@ J0:["$","html",null,{
    HTTP/1.1 200 OK
    Content-Type: application/javascript
 
-   // client/index.jsx
+   // client/index.tsx
    import { hydrateRoot } from 'react-dom/client'
    import { FlightDecoder } from './flight-decoder.js'
 
@@ -567,7 +567,7 @@ export default function HomePage() {
 ### 示例代码
 
 ```javascript
-// app/page.jsx (首页)
+// app/page.tsx (首页)
 import Link from 'next/link'
 import Counter from '@/components/Counter'
 
@@ -581,7 +581,7 @@ export default function HomePage() {
   )
 }
 
-// app/about/page.jsx (关于页)
+// app/about/page.tsx (关于页)
 import Chart from '@/components/Chart'
 
 export default function AboutPage() {
@@ -637,7 +637,7 @@ export default function Chart() {
 
 4. 服务器处理 RSC 请求
 
-   // server/index.js
+   // server/index.ts
    app.get('*', async (req, res) => {
      const isRSCRequest = req.query._rsc === '1'
 
@@ -856,7 +856,7 @@ M4:{"id":"./components/Chart.jsx",...}
 ### 示例代码
 
 ```javascript
-// app/page.jsx
+// app/page.tsx
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -1151,7 +1151,7 @@ router.prefetch(href) {
 ### 示例代码
 
 ```javascript
-// app/page.jsx
+// app/page.tsx
 'use client'
 
 import { useState } from 'react'
@@ -1206,7 +1206,7 @@ export default function Modal({ onClose }) {
 
    GET /client.js
 
-   GET /app/page.jsx  ← HomePage 组件
+   GET /app/page.tsx  ← HomePage 组件
 
    ✅ 不加载 Modal.jsx
 
@@ -1316,7 +1316,7 @@ export default function HomePage() {
 }
 
 初次加载:
-GET /app/page.jsx        ← 15 KB
+GET /app/page.tsx        ← 15 KB
 GET /components/Modal.jsx ← 80 KB  ← 即使不使用也要下载
 总计: 95 KB
 ```
@@ -1343,7 +1343,7 @@ export default function HomePage() {
 }
 
 初次加载:
-GET /app/page.jsx        ← 15 KB
+GET /app/page.tsx        ← 15 KB
 总计: 15 KB (减少 84%)
 
 点击按钮时:
@@ -1494,7 +1494,7 @@ export default function HomePage() {
 ### 示例代码
 
 ```javascript
-// app/page.jsx
+// app/page.tsx
 'use client'
 
 import { lazy, Suspense, useState } from 'react'

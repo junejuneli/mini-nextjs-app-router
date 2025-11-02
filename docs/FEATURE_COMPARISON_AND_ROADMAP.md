@@ -66,7 +66,7 @@ Mini Next.js App Router (约 700 行核心代码)
 构建时 (npm run build)
   ↓
   ┌─────────────────────────────────────────────────────────┐
-  │  1. 路由扫描 (build/scan-app.js)                        │
+  │  1. 路由扫描 (build/scan-app.ts)                        │
   │     - 递归扫描 app/ 目录                                 │
   │     - 识别特殊文件: page, layout, loading, error       │
   │     - 检测动态路由: [id], [...slug]                     │
@@ -83,7 +83,7 @@ Mini Next.js App Router (约 700 行核心代码)
   └─────────────────────────────────────────────────────────┘
   ↓
   ┌─────────────────────────────────────────────────────────┐
-  │  3. SSG 预渲染 (build/render-static.js)                │
+  │  3. SSG 预渲染 (build/render-static.ts)                │
   │     - 收集静态路由 (排除动态路由和 force-dynamic)       │
   │     - 对每个静态路由:                                    │
   │       ├─ renderRSC() → 生成 Flight Protocol            │
@@ -102,7 +102,7 @@ Mini Next.js App Router (约 700 行核心代码)
 运行时 (npm start)
   ↓
   ┌─────────────────────────────────────────────────────────┐
-  │  服务器启动 (server/index.js)                           │
+  │  服务器启动 (server/index.ts)                           │
   │     - 加载 manifest.json                                │
   │     - 启动 Express 服务器                               │
   │     - 监听 HTTP 请求                                    │
@@ -132,7 +132,7 @@ Mini Next.js App Router (约 700 行核心代码)
   客户端接收 HTML
   ↓
   ┌─────────────────────────────────────────────────────────┐
-  │  客户端水合 (client/index.jsx)                          │
+  │  客户端水合 (client/index.tsx)                          │
   │     - 读取 __FLIGHT_DATA__ 中的 Flight Protocol         │
   │     - flightDecoder.decode() 解码                       │
   │     - hydrateRoot() 或 createRoot() 渲染                │
@@ -142,7 +142,7 @@ Mini Next.js App Router (约 700 行核心代码)
   用户点击 Link
   ↓
   ┌─────────────────────────────────────────────────────────┐
-  │  客户端导航 (client/router.jsx)                         │
+  │  客户端导航 (client/router.tsx)                         │
   │     - 拦截点击事件                                       │
   │     - fetch(href + '?_rsc=1') 获取 Flight Protocol      │
   │     - flightDecoder.decode() 解码                       │
@@ -154,7 +154,7 @@ Mini Next.js App Router (约 700 行核心代码)
 
 ### 🔥 核心原理详解
 
-#### 1. RSC 渲染流程 (shared/rsc-renderer.js)
+#### 1. RSC 渲染流程 (shared/rsc-renderer.ts)
 
 ```javascript
 // 核心：从路由路径构建嵌套 Layout 树
@@ -180,9 +180,9 @@ async function renderRSC(routePath, params, clientComponentMap) {
 **关键点**：
 - ✅ 支持任意深度的嵌套 Layout
 - ✅ 支持异步 Server Components (`await` 数据获取)
-- ✅ 支持 Suspense + loading.jsx
+- ✅ 支持 Suspense + loading.tsx
 
-#### 2. Flight Protocol 编码 (shared/flight-encoder.js)
+#### 2. Flight Protocol 编码 (shared/flight-encoder.ts)
 
 ```
 输入: React 元素树
@@ -202,7 +202,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 - ✅ Server Component 完全在服务端执行
 - ✅ 支持 Suspense 边界序列化
 
-#### 3. Flight Protocol 解码 (shared/flight-decoder.js + client/module-map.ts)
+#### 3. Flight Protocol 解码 (shared/flight-decoder.ts + client/module-map.ts)
 
 ```
 服务端解码 (SSG 预渲染):
@@ -222,7 +222,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 - ✅ SSG 预渲染时生成有效 HTML (SEO 友好)
 - ✅ 客户端动态加载实际组件
 
-#### 4. ISR 机制 (server/index.js + server/regenerate.js + shared/metadata.js)
+#### 4. ISR 机制 (server/index.ts + server/regenerate.ts + shared/metadata.ts)
 
 ```
 请求到达
@@ -256,32 +256,32 @@ async function renderRSC(routePath, params, clientComponentMap) {
 | 功能分类 | 功能 | Mini Next.js | Next.js 15 | 实现程度 | 代码位置 |
 |---------|------|-------------|-----------|---------|----------|
 | **核心路由** | | | | | |
-| | 文件系统路由 | ✅ | ✅ | 100% | `build/scan-app.js` |
-| | 嵌套路由 | ✅ | ✅ | 100% | `build/scan-app.js:130` |
-| | 动态路由 `[id]` | ⚠️ 检测但不预渲染 | ✅ | 40% | `build/scan-app.js:153` |
-| | Catch-all `[...slug]` | ⚠️ 检测但不预渲染 | ✅ | 40% | `build/scan-app.js:159` |
+| | 文件系统路由 | ✅ | ✅ | 100% | `build/scan-app.ts` |
+| | 嵌套路由 | ✅ | ✅ | 100% | `build/scan-app.ts:130` |
+| | 动态路由 `[id]` | ⚠️ 检测但不预渲染 | ✅ | 40% | `build/scan-app.ts:153` |
+| | Catch-all `[...slug]` | ⚠️ 检测但不预渲染 | ✅ | 40% | `build/scan-app.ts:159` |
 | | Optional Catch-all `[[...slug]]` | ❌ | ✅ | 0% | - |
 | | 路由组 `(group)` | ❌ | ✅ | 0% | - |
 | | 私有文件夹 `_folder` | ❌ | ✅ | 0% | - |
 | | **特殊文件** | | | | |
-| | `page.jsx` | ✅ | ✅ | 100% | `build/scan-app.js:98` |
-| | `layout.jsx` | ✅ | ✅ | 100% | `build/scan-app.js:98` |
-| | `loading.jsx` | ✅ | ✅ | 100% | `build/scan-app.js:98` |
-| | `error.jsx` | ⚠️ 检测但未实现 | ✅ | 20% | `build/scan-app.js:98` |
-| | `not-found.jsx` | ⚠️ 检测但未实现 | ✅ | 20% | `build/scan-app.js:98` |
+| | `page.tsx` | ✅ | ✅ | 100% | `build/scan-app.ts:98` |
+| | `layout.tsx` | ✅ | ✅ | 100% | `build/scan-app.ts:98` |
+| | `loading.tsx` | ✅ | ✅ | 100% | `build/scan-app.ts:98` |
+| | `error.tsx` | ⚠️ 检测但未实现 | ✅ | 20% | `build/scan-app.ts:98` |
+| | `not-found.tsx` | ⚠️ 检测但未实现 | ✅ | 20% | `build/scan-app.ts:98` |
 | | `template.jsx` | ❌ | ✅ | 0% | - |
 | | `default.jsx` | ❌ | ✅ | 0% | - |
 | | **渲染策略** | | | | |
-| | Server Components | ✅ | ✅ | 100% | `shared/rsc-renderer.js` |
-| | Client Components | ✅ | ✅ | 100% | `shared/flight-encoder.js:152` |
-| | 异步 Server Components | ✅ | ✅ | 100% | `shared/flight-encoder.js:177` |
-| | SSG (静态生成) | ✅ | ✅ | 100% | `build/render-static.js` |
-| | ISR (增量静态再生成) | ✅ | ✅ | 100% | `server/regenerate.js` |
-| | SSR (动态渲染) | ✅ | ✅ | 100% | `server/index.js:179` |
-| | Streaming SSR | ✅ | ✅ | 100% | `shared/rsc-renderer.js:192` |
+| | Server Components | ✅ | ✅ | 100% | `shared/rsc-renderer.ts` |
+| | Client Components | ✅ | ✅ | 100% | `shared/flight-encoder.ts:152` |
+| | 异步 Server Components | ✅ | ✅ | 100% | `shared/flight-encoder.ts:177` |
+| | SSG (静态生成) | ✅ | ✅ | 100% | `build/render-static.ts` |
+| | ISR (增量静态再生成) | ✅ | ✅ | 100% | `server/regenerate.ts` |
+| | SSR (动态渲染) | ✅ | ✅ | 100% | `server/index.ts:179` |
+| | Streaming SSR | ✅ | ✅ | 100% | `shared/rsc-renderer.ts:192` |
 | | **客户端功能** | | | | |
-| | 客户端导航 | ✅ | ✅ | 100% | `client/router.jsx` |
-| | Link 组件 | ✅ | ✅ | 100% | `client/Link.jsx` |
+| | 客户端导航 | ✅ | ✅ | 100% | `client/router.tsx` |
+| | Link 组件 | ✅ | ✅ | 100% | `client/Link.tsx` |
 | | useRouter hook | ❌ | ✅ | 0% | - |
 | | usePathname hook | ❌ | ✅ | 0% | - |
 | | useSearchParams hook | ❌ | ✅ | 0% | - |
@@ -290,7 +290,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 | | notFound() | ❌ | ✅ | 0% | - |
 | | **数据获取** | | | | |
 | | fetch with cache | ❌ | ✅ | 0% | - |
-| | fetch with revalidate | ⚠️ 页面级 | ✅ | 50% | `build/scan-app.js:208` |
+| | fetch with revalidate | ⚠️ 页面级 | ✅ | 50% | `build/scan-app.ts:208` |
 | | unstable_cache | ❌ | ✅ | 0% | - |
 | | revalidatePath | ❌ | ✅ | 0% | - |
 | | revalidateTag | ❌ | ✅ | 0% | - |
@@ -305,20 +305,20 @@ async function renderRSC(routePath, params, clientComponentMap) {
 | | Route Handlers (API) | ❌ | ✅ | 0% | - |
 | | Middleware | ❌ | ✅ | 0% | - |
 | | **配置** | | | | |
-| | `dynamic` 配置 | ✅ | ✅ | 100% | `build/scan-app.js:240` |
-| | `revalidate` 配置 | ✅ | ✅ | 100% | `build/scan-app.js:208` |
+| | `dynamic` 配置 | ✅ | ✅ | 100% | `build/scan-app.ts:240` |
+| | `revalidate` 配置 | ✅ | ✅ | 100% | `build/scan-app.ts:208` |
 | | `fetchCache` | ❌ | ✅ | 0% | - |
 | | `runtime` | ❌ | ✅ | 0% | - |
 | | `preferredRegion` | ❌ | ✅ | 0% | - |
 | | **缓存** | | | | |
 | | Request Memoization | ❌ | ✅ | 0% | - |
 | | Data Cache | ❌ | ✅ | 0% | - |
-| | Full Route Cache | ✅ | ✅ | 100% | `build/render-static.js` |
-| | Router Cache | ⚠️ 基础 | ✅ | 40% | `client/router.jsx` |
+| | Full Route Cache | ✅ | ✅ | 100% | `build/render-static.ts` |
+| | Router Cache | ⚠️ 基础 | ✅ | 40% | `client/router.tsx` |
 | | **错误处理** | | | | |
-| | Error Boundary (全局) | ✅ | ✅ | 100% | `client/ErrorBoundary.jsx` |
-| | error.jsx (路由级) | ❌ | ✅ | 0% | - |
-| | global-error.jsx | ❌ | ✅ | 0% | - |
+| | Error Boundary (全局) | ✅ | ✅ | 100% | `client/ErrorBoundary.tsx` |
+| | error.tsx (路由级) | ❌ | ✅ | 0% | - |
+| | global-error.tsx | ❌ | ✅ | 0% | - |
 
 ### 📈 统计总结
 
@@ -340,13 +340,13 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 ### ✅ 1. 完整的 RSC 渲染系统
 
-**代码**: `shared/rsc-renderer.js`, `shared/flight-encoder.js`, `shared/flight-decoder.js`
+**代码**: `shared/rsc-renderer.ts`, `shared/flight-encoder.ts`, `shared/flight-decoder.ts`
 
 **实现亮点**：
 
 1. **嵌套 Layout 支持**：
    ```javascript
-   // shared/rsc-renderer.js:82
+   // shared/rsc-renderer.ts:82
    async function buildLayoutTree(routePath, params) {
      // 收集路径上所有 Layout
      const layouts = []
@@ -366,7 +366,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 2. **异步 Server Components**：
    ```javascript
-   // shared/flight-encoder.js:177
+   // shared/flight-encoder.ts:177
    let rendered = type(props)
 
    // 如果组件是异步的,等待它执行完成
@@ -377,7 +377,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 3. **Suspense 边界序列化**：
    ```javascript
-   // shared/flight-encoder.js:131
+   // shared/flight-encoder.ts:131
    if (symbolName === 'react.suspense') {
      return [
        '$',
@@ -399,13 +399,13 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 ### ✅ 2. 完整的 ISR 实现
 
-**代码**: `server/index.js:128-177`, `server/regenerate.js`, `shared/metadata.js`
+**代码**: `server/index.ts:128-177`, `server/regenerate.ts`, `shared/metadata.ts`
 
 **实现亮点**：
 
 1. **Stale-while-revalidate 策略**：
    ```javascript
-   // server/index.js:136
+   // server/index.ts:136
    if (needsRevalidation && prerenderInfo.revalidate !== false) {
      // 立即返回旧缓存
      // 后台重新生成
@@ -418,7 +418,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 2. **锁机制防止重复生成**：
    ```javascript
-   // server/regenerate.js:103
+   // server/regenerate.ts:103
    const regenerationLocks = new Map()
 
    export async function regenerateWithLock(routePath, options) {
@@ -439,7 +439,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 3. **原子性文件写入**：
    ```javascript
-   // server/regenerate.js:76
+   // server/regenerate.ts:76
    const htmlTempPath = htmlPath + '.tmp'
    fs.writeFileSync(htmlTempPath, html)
    fs.renameSync(htmlTempPath, htmlPath)  // 原子操作
@@ -452,13 +452,13 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 ### ✅ 3. 智能路由扫描
 
-**代码**: `build/scan-app.js`
+**代码**: `build/scan-app.ts`
 
 **实现亮点**：
 
 1. **动态路由检测**：
    ```javascript
-   // build/scan-app.js:152
+   // build/scan-app.ts:152
    function parseSegment(segment) {
      // 动态路由: [id]
      const dynamicMatch = segment.match(/^\[([^\]]+)\]$/)
@@ -485,7 +485,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 2. **配置提取**：
    ```javascript
-   // build/scan-app.js:208
+   // build/scan-app.ts:208
    function extractRevalidateConfig(filePath) {
      const content = fs.readFileSync(filePath, 'utf-8')
      const match = content.match(/export\s+const\s+revalidate\s*=\s*(\d+|false)/)
@@ -504,7 +504,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 ### ✅ 4. 双模式水合架构
 
-**代码**: `client/index.jsx`, `shared/client-root.jsx`
+**代码**: `client/index.tsx`, `shared/client-root.tsx`
 
 **实现原理**：
 
@@ -541,7 +541,7 @@ async function renderRSC(routePath, params, clientComponentMap) {
 
 **Next.js 实现**：
 ```javascript
-// app/blog/[slug]/page.jsx
+// app/blog/[slug]/page.tsx
 export async function generateStaticParams() {
   const posts = await fetch('...').then(res => res.json())
   return posts.map((post) => ({ slug: post.slug }))
@@ -558,7 +558,7 @@ export default async function Page({ params }) {
 #### 步骤 1: 扫描时提取 generateStaticParams
 
 ```javascript
-// build/scan-app.js
+// build/scan-app.ts
 function extractStaticParams(filePath) {
   try {
     const module = await import(filePath)
@@ -580,7 +580,7 @@ if (fileType === 'page' && node.dynamic) {
 #### 步骤 2: 预渲染时调用 generateStaticParams
 
 ```javascript
-// build/render-static.js
+// build/render-static.ts
 async function prerenderDynamicRoutes(routeTree, clientComponentMap) {
   const dynamicRoutes = collectDynamicRoutes(routeTree)
 
@@ -621,7 +621,7 @@ function buildPathWithParams(pathPattern, params) {
 #### 步骤 3: 运行时匹配动态路由
 
 ```javascript
-// server/index.js
+// server/index.ts
 function matchDynamicRoute(url, routeTree) {
   // 将 '/blog/post-1' 匹配到 '/blog/[slug]'
   // 提取参数 { slug: 'post-1' }
@@ -660,7 +660,7 @@ function matchDynamicRoute(url, routeTree) {
 
 **实现难度**: 🟡 中等
 **预计工作量**: 4-6 小时
-**关键文件**: `build/scan-app.js`, `build/render-static.js`, `server/index.js`
+**关键文件**: `build/scan-app.ts`, `build/render-static.ts`, `server/index.ts`
 
 ---
 
@@ -688,7 +688,7 @@ export async function POST(request) {
 #### 步骤 1: 扫描 route.js 文件
 
 ```javascript
-// build/scan-app.js
+// build/scan-app.ts
 const SPECIAL_FILES = {
   'route.js': 'route',
   'route.ts': 'route',
@@ -723,7 +723,7 @@ function extractRouteMethods(filePath) {
 #### 步骤 2: 服务端处理 API 请求
 
 ```javascript
-// server/index.js
+// server/index.ts
 app.all('*', async (req, res, next) => {
   // 1. 检查是否是 API 路由
   const route = matchRoute(manifest.routeTree, req.path)
@@ -784,7 +784,7 @@ async function handleAPIRoute(req, res, route) {
 
 **实现难度**: 🟡 中等
 **预计工作量**: 3-5 小时
-**关键文件**: `build/scan-app.js`, `server/index.js`
+**关键文件**: `build/scan-app.ts`, `server/index.ts`
 
 ---
 
@@ -794,7 +794,7 @@ async function handleAPIRoute(req, res, route) {
 
 **Next.js 实现**：
 ```javascript
-// app/dashboard/layout.jsx
+// app/dashboard/layout.tsx
 export default function Layout({ children, analytics, team }) {
   return (
     <div>
@@ -807,12 +807,12 @@ export default function Layout({ children, analytics, team }) {
 
 // 目录结构:
 // app/dashboard/
-//   layout.jsx
-//   page.jsx
+//   layout.tsx
+//   page.tsx
 //   @analytics/
-//     page.jsx
+//     page.tsx
 //   @team/
-//     page.jsx
+//     page.tsx
 ```
 
 **实现方案**：
@@ -820,7 +820,7 @@ export default function Layout({ children, analytics, team }) {
 #### 步骤 1: 扫描 @folder 语法
 
 ```javascript
-// build/scan-app.js
+// build/scan-app.ts
 function scanDirectory(dir, appDir, urlPath) {
   // ...
 
@@ -856,7 +856,7 @@ function scanDirectory(dir, appDir, urlPath) {
 #### 步骤 2: 渲染时传递 slots
 
 ```javascript
-// shared/rsc-renderer.js
+// shared/rsc-renderer.ts
 async function renderLayout(layoutInfo, children, params, slots = {}) {
   const LayoutComponent = await loadComponent(layoutInfo.absolutePath)
 
@@ -900,7 +900,7 @@ async function buildLayoutTree(routePath, params) {
 
 **实现难度**: 🟡 中等
 **预计工作量**: 6-8 小时
-**关键文件**: `build/scan-app.js`, `shared/rsc-renderer.js`
+**关键文件**: `build/scan-app.ts`, `shared/rsc-renderer.ts`
 
 ---
 
@@ -910,7 +910,7 @@ async function buildLayoutTree(routePath, params) {
 
 **Next.js 实现**：
 ```javascript
-// app/blog/[slug]/page.jsx
+// app/blog/[slug]/page.tsx
 export async function generateMetadata({ params }) {
   const post = await getPost(params.slug)
 
@@ -934,7 +934,7 @@ export default async function Page({ params }) {
 #### 步骤 1: 调用 generateMetadata
 
 ```javascript
-// shared/rsc-renderer.js
+// shared/rsc-renderer.ts
 export async function renderRSC(routePath, params, clientComponentMap) {
   const targetRoute = routePath[routePath.length - 1]
 
@@ -965,7 +965,7 @@ export async function renderRSC(routePath, params, clientComponentMap) {
 #### 步骤 2: 注入到 HTML
 
 ```javascript
-// shared/html-template.js
+// shared/html-template.ts
 export function generateHTMLTemplate({ flight, clientModules, metadata, ... }) {
   // 构建 meta tags
   const metaTags = []
@@ -1001,7 +1001,7 @@ export function generateHTMLTemplate({ flight, clientModules, metadata, ... }) {
 
 **实现难度**: 🟢 简单
 **预计工作量**: 2-3 小时
-**关键文件**: `shared/rsc-renderer.js`, `shared/html-template.js`
+**关键文件**: `shared/rsc-renderer.ts`, `shared/html-template.ts`
 
 ---
 
@@ -1036,7 +1036,7 @@ export const config = {
 #### 步骤 1: 加载 middleware.js
 
 ```javascript
-// server/index.js
+// server/index.ts
 let middleware = null
 let middlewareConfig = null
 
@@ -1053,7 +1053,7 @@ if (fs.existsSync(middlewarePath)) {
 #### 步骤 2: 在请求处理前运行 middleware
 
 ```javascript
-// server/index.js
+// server/index.ts
 app.use(async (req, res, next) => {
   if (!middleware) return next()
 
@@ -1105,7 +1105,7 @@ app.use(async (req, res, next) => {
 
 **实现难度**: 🟡 中等
 **预计工作量**: 3-4 小时
-**关键文件**: `server/index.js`
+**关键文件**: `server/index.ts`
 
 ---
 
@@ -1136,7 +1136,7 @@ export default function Component() {
 #### 创建 hooks
 
 ```javascript
-// client/hooks.js
+// client/hooks.ts
 import { useContext } from 'react'
 import { RouterContext } from './router.jsx'
 
@@ -1172,7 +1172,7 @@ export function useParams() {
 #### 更新 RouterContext
 
 ```javascript
-// client/router.jsx
+// client/router.tsx
 export function Router({ initialTree, initialPathname }) {
   const [pathname, setPathname] = useState(initialPathname)
   const [params, setParams] = useState({})  // ← 新增
@@ -1201,7 +1201,7 @@ export function Router({ initialTree, initialPathname }) {
 
 **实现难度**: 🟢 简单
 **预计工作量**: 1-2 小时
-**关键文件**: `client/hooks.js`, `client/router.jsx`
+**关键文件**: `client/hooks.ts`, `client/router.tsx`
 
 ---
 
@@ -1215,22 +1215,22 @@ export function Router({ initialTree, initialPathname }) {
 app/
   (marketing)/
     about/
-      page.jsx    → /about (不是 /marketing/about)
+      page.tsx    → /about (不是 /marketing/about)
     pricing/
-      page.jsx    → /pricing
+      page.tsx    → /pricing
 
 // 私有文件夹 (不生成路由)
 app/
   _components/
     Button.jsx    → 不生成路由
   dashboard/
-    page.jsx      → /dashboard
+    page.tsx      → /dashboard
 ```
 
 **实现方案**：
 
 ```javascript
-// build/scan-app.js
+// build/scan-app.ts
 function scanDirectory(dir, appDir, urlPath) {
   const entries = fs.readdirSync(dir, { withFileTypes: true })
   const dirname = path.basename(dir)
@@ -1274,7 +1274,7 @@ function scanDirectory(dir, appDir, urlPath) {
 
 **实现难度**: 🟢 简单
 **预计工作量**: 1-2 小时
-**关键文件**: `build/scan-app.js`
+**关键文件**: `build/scan-app.ts`
 
 ---
 
@@ -1382,19 +1382,19 @@ function scanDirectory(dir, appDir, urlPath) {
 **目标**: 完善错误处理机制
 
 ```
-[P5.1] 路由级 error.jsx
-  ├─ 扫描 error.jsx
+[P5.1] 路由级 error.tsx
+  ├─ 扫描 error.tsx
   ├─ 包裹 ErrorBoundary
   └─ 支持 reset() 函数
   工作量: 3-4 小时
 
-[P5.2] global-error.jsx
+[P5.2] global-error.tsx
   ├─ 根级错误处理
   └─ 捕获 Layout 错误
   工作量: 1-2 小时
 
-[P5.3] not-found.jsx
-  ├─ 扫描 not-found.jsx
+[P5.3] not-found.tsx
+  ├─ 扫描 not-found.tsx
   ├─ notFound() 函数
   └─ 404 页面渲染
   工作量: 2-3 小时
@@ -1477,9 +1477,9 @@ Phase 5: 1 周     (错误处理)
 
 **推荐学习路径**:
 
-1. 阅读 `shared/rsc-renderer.js` 理解 RSC 渲染
-2. 阅读 `shared/flight-encoder.js` 理解 Flight Protocol
-3. 阅读 `server/regenerate.js` 理解 ISR
+1. 阅读 `shared/rsc-renderer.ts` 理解 RSC 渲染
+2. 阅读 `shared/flight-encoder.ts` 理解 Flight Protocol
+3. 阅读 `server/regenerate.ts` 理解 ISR
 4. 参考本文档实现缺失功能
 
 ---

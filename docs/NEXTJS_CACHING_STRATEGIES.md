@@ -651,7 +651,7 @@ const getUser = cache(async (id) => {
 
 #### ✅ 已实现功能
 
-**构建时预渲染** (`build/render-static.js:40`)
+**构建时预渲染** (`build/render-static.ts:40`)
 ```javascript
 // 收集静态路由（排除动态路由和 force-dynamic）
 function collectStaticRoutes(node) {
@@ -664,7 +664,7 @@ function collectStaticRoutes(node) {
 }
 ```
 
-**ISR 时间重新验证** (`server/index.js:136`)
+**ISR 时间重新验证** (`server/index.ts:136`)
 ```javascript
 // Stale-while-revalidate 策略
 if (shouldRevalidate(url, prerenderInfo.revalidate)) {
@@ -673,7 +673,7 @@ if (shouldRevalidate(url, prerenderInfo.revalidate)) {
 return fs.readFileSync(filePath)  // 立即返回旧缓存
 ```
 
-**防重复生成锁** (`server/regenerate.js:103`)
+**防重复生成锁** (`server/regenerate.ts:103`)
 ```javascript
 const regenerationLocks = new Map()
 
@@ -682,7 +682,7 @@ if (regenerationLocks.has(routePath)) {
 }
 ```
 
-**原子性文件写入** (`server/regenerate.js:75`)
+**原子性文件写入** (`server/regenerate.ts:75`)
 ```javascript
 // 避免读到不完整文件
 fs.writeFileSync(htmlTempPath, html)
@@ -715,16 +715,16 @@ fs.renameSync(htmlTempPath, htmlPath)
 
 #### ✅ 适合学习的内容
 
-1. **ISR 核心原理**（`server/index.js:136-158`）
+1. **ISR 核心原理**（`server/index.ts:136-158`）
    - Stale-while-revalidate 策略
    - 后台重新生成机制
    - 元数据管理
 
-2. **静态路由检测**（`build/render-static.js:148-171`）
+2. **静态路由检测**（`build/render-static.ts:148-171`）
    - 判断路由是否可预渲染
    - 动态路由段检测
 
-3. **锁机制设计**（`server/regenerate.js:103-130`）
+3. **锁机制设计**（`server/regenerate.ts:103-130`）
    - 防止重复生成
    - 并发场景资源管理
 

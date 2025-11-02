@@ -196,7 +196,7 @@ return React.createElement(Component, props)
 ### FlightEncoder 核心代码
 
 ```javascript
-// server/flight-encoder.js
+// server/flight-encoder.ts
 export class FlightEncoder {
   constructor(clientComponentMap) {
     this.clientComponentMap = clientComponentMap
@@ -833,5 +833,5 @@ return <form action={action}>...</form>
 
 **相关文档**：
 - [CLIENT_COMPONENT_LOADING.md](./CLIENT_COMPONENT_LOADING.md) - Client Component 加载机制
-- [server/flight-encoder.js](./server/flight-encoder.js) - 编码器实现
+- [server/flight-encoder.ts](./server/flight-encoder.ts) - 编码器实现
 - [client/module-map.ts](./client/module-map.ts) - 解码器实现（FlightDecoder 类）与模块映射

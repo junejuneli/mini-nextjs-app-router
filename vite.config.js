@@ -15,7 +15,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         // 客户端入口
-        client: path.resolve(__dirname, 'client/index.jsx')
+        client: path.resolve(__dirname, 'client/index.tsx')
       },
 
       output: {

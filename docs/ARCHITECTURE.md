@@ -52,7 +52,7 @@ RSC 架构：
 
 ### 示例对比
 
-**Server Component** (app/page.jsx):
+**Server Component** (app/page.tsx):
 ```jsx
 // 无需 'use client' 指令，默认是 Server Component
 export default async function Page() {
@@ -233,7 +233,7 @@ J0:["$","div",null,{"children":[["$","h1",null,{"children":"Server Title"}],["$"
 #### 2. 服务端处理
 
 ```javascript
-// server/index.js
+// server/index.ts
 
 // 2.1 路由匹配
 const route = matchRoute('/dashboard')
@@ -243,7 +243,7 @@ const route = matchRoute('/dashboard')
 const { flight, clientModules } = await renderRSC(route)
 ```
 
-**2.2.1 构建 Layout 树** (server/rsc-renderer.js):
+**2.2.1 构建 Layout 树** (server/rsc-renderer.ts):
 ```javascript
 // 收集 Layout 层级
 const layouts = [RootLayout, DashboardLayout]
@@ -265,7 +265,7 @@ const rootResult = RootLayout({
 // ...
 ```
 
-**2.2.3 编码为 Flight** (server/flight-encoder.js):
+**2.2.3 编码为 Flight** (server/flight-encoder.ts):
 ```javascript
 const encoder = new FlightEncoder(clientComponentMap)
 
@@ -290,7 +290,7 @@ function encodeElement(element) {
 
 **2.2.4 输出 Flight**:
 ```
-M1:{"id":"./app/dashboard/ClientCounter.jsx","chunks":["ClientCounter"],"name":"default"}
+M1:{"id":"./app/dashboard/ClientCounter.tsx","chunks":["ClientCounter"],"name":"default"}
 J0:["$","html",null,{"children":[...]}]
 ```
 
@@ -318,7 +318,7 @@ const html = `
 
 #### 4. 客户端处理
 
-**4.1 读取 Flight Payload** (client/index.jsx):
+**4.1 读取 Flight Payload** (client/index.tsx):
 ```javascript
 const flightData = JSON.parse(
   document.getElementById('__FLIGHT_DATA__').textContent
@@ -350,11 +350,11 @@ const tree = resolveChunk('J0')
 function resolveElement(["$", "@1", null, props]) {
   // 查找 M1
   const moduleInfo = modules.get('M1')
-  // → { id: './app/dashboard/ClientCounter.jsx', ... }
+  // → { id: './app/dashboard/ClientCounter.tsx', ... }
 
   // 动态加载
   const Component = React.lazy(() =>
-    import('./app/dashboard/ClientCounter.jsx')
+    import('./app/dashboard/ClientCounter.tsx')
   )
 
   return <Component {...props} />
@@ -375,7 +375,7 @@ hydrateRoot(
 
 ## 关键代码解析
 
-### 1. Flight Encoder (server/flight-encoder.js)
+### 1. Flight Encoder (server/flight-encoder.ts)
 
 #### 核心方法：encodeElement
 

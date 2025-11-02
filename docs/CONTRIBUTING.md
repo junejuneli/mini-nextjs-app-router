@@ -73,7 +73,7 @@
 
 **示例：**
 ```
-feat: 添加 error.jsx 错误边界示例
+feat: 添加 error.tsx 错误边界示例
 fix: 修复客户端路由缓存问题
 docs: 更新 README 中的安装说明
 ```

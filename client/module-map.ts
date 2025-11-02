@@ -5,7 +5,7 @@
  */
 
 import React from 'react'
-import { FlightDecoder } from '../shared/flight-decoder.js'
+import { FlightDecoder } from '../shared/flight-decoder.ts'
 
 type ModuleMap = Record<string, any>
 
