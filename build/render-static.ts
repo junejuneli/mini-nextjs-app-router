@@ -95,7 +95,7 @@ export async function prerenderStaticRoutes(
       // 渲染 RSC（传递参数）
       const { flight, clientModules } = await renderRSC(
         routeInfo.routePath,
-        routeInfo.params || {},  // ⭐ 传递动态路由参数
+        { params: routeInfo.params, searchParams: {} },  // ⭐ 传递动态路由参数和查询参数
         clientComponentMap
       )
 

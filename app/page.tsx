@@ -47,6 +47,8 @@ export default function HomePage(): JSX.Element {
         <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
           <li><Link href="/about">关于页面</Link> - 另一个 Server Component</li>
           <li><Link href="/dashboard">仪表盘</Link> - 演示 Client Component</li>
+          <li><Link href="/users">用户列表</Link> - 服务端分页示例 🆕</li>
+          <li><Link href="/blog">博客列表</Link> - 静态内容展示</li>
         </ul>
       </div>
 

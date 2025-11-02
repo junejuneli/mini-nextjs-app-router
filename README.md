@@ -194,33 +194,40 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
 
 **Core Documentation** (Recommended reading order):
 
-1. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ Essential
+1. **[FEATURE_COMPARISON_AND_ROADMAP.md](./docs/FEATURE_COMPARISON_AND_ROADMAP.md)** ⭐ Start Here
+   - Complete feature comparison with Next.js 15
+   - Core architecture and data flow
+   - 6 核心技术详解 (RSC, Flight Protocol, ISR, 动态路由, 路由组, 错误处理)
+   - Recommended learning path
+
+2. **[FLIGHT_PROTOCOL_DEEP_DIVE.md](./docs/FLIGHT_PROTOCOL_DEEP_DIVE.md)** ⭐ Deep Dive
+   - Complete Flight Protocol format specification
+   - Module Reference mechanism
+   - Encoder/Decoder implementation
+   - Dual-mode decoding (SSG vs Client)
+   - Real-world examples
+
+3. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ Essential
    - 5 loading scenarios for Client Components
    - SSR initial load, client navigation, prefetch, dynamic import, React.lazy
    - Network request timeline analysis
    - Caching mechanisms
    - Performance optimization tips
 
-2. **[FLIGHT_PROTOCOL_DEEP_DIVE.md](./docs/FLIGHT_PROTOCOL_DEEP_DIVE.md)** ⭐ Deep Dive
-   - Complete Flight Protocol format specification
-   - Module Reference mechanism
-   - Encoder/Decoder implementation
-   - Comparison with JSON serialization
-   - Real-world examples
+4. **[SERVER_RUNTIME_AND_ISR.md](./docs/SERVER_RUNTIME_AND_ISR.md)**
+   - Server runtime architecture
+   - Request handling pipeline
+   - ISR implementation (Stale-while-revalidate)
+   - Route matching algorithm
+   - Concurrent safety and atomic writes
 
-3. **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)**
-   - Overall project architecture
-   - React Server Components concepts
-   - Rendering pipeline details
-   - Comparison with real Next.js
-
-4. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
+5. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
    - Route scanning system implementation
    - Configuration extraction (revalidate, dynamic)
    - Config flow: build time → runtime
-   - ISR lifecycle details
+   - Dynamic routes and generateStaticParams
 
-5. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
+6. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
    - Next.js 15 caching strategies
    - Four-layer cache architecture
    - Mini Next.js implementation comparison
@@ -231,49 +238,38 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
 **Beginner**:
 1. Read this README to understand the project overview
 2. Run the project and explore example pages
-3. Read `CLIENT_COMPONENT_LOADING.md` for loading mechanisms
+3. Read `FEATURE_COMPARISON_AND_ROADMAP.md` for architecture and feature comparison
 4. Observe browser DevTools and console logs
 
 **Intermediate**:
 5. Read `FLIGHT_PROTOCOL_DEEP_DIVE.md` for protocol internals
-6. Read `ARCHITECTURE.md` for rendering pipeline
-7. Examine source code implementation
-8. Check `.next/` build output files
+6. Read `CLIENT_COMPONENT_LOADING.md` for loading mechanisms
+7. Read `SERVER_RUNTIME_AND_ISR.md` for server runtime
+8. Examine source code implementation
+9. Check `.next/` build output files
 
 **Advanced**:
-9. Modify `app/` examples and observe changes
-10. Create your own Server/Client Components
-11. Implement new features and trace Flight Protocol data
-12. Compare with real Next.js source code
+10. Modify `app/` examples and observe changes
+11. Create your own Server/Client Components
+12. Implement new features and trace Flight Protocol data
+13. Compare with real Next.js source code
 
 ## 🆚 Comparison with Real Next.js
 
-### Features
+### Implementation Status
 
-| Feature | Mini Next.js | Next.js 15 |
-|---------|--------------|------------|
-| **Code Size** | ~2000 lines | 500K+ lines |
-| **React Server Components** | ✅ Core implementation | ✅ Full implementation |
-| **Flight Protocol** | ✅ Basic encoder/decoder | ✅ Optimized streaming |
-| **File-system Routing** | ✅ app/ directory | ✅ + Advanced patterns |
-| **Streaming SSR** | ✅ With Suspense | ✅ + Selective hydration |
-| **ISR** | ✅ Time-based revalidation | ✅ + On-demand revalidation |
-| **Client Router** | ✅ Basic navigation | ✅ + Smart prefetching |
-| **Caching** | ⚠️ Basic (SSG/ISR only) | ✅ 4-layer cache system |
-| **Dynamic Routes** | ✅ [param] with generateStaticParams | ✅ [param] and [...slug] |
-| **Middleware** | ❌ Not implemented | ✅ Full middleware support |
-| **Image/Font Optimization** | ❌ Not implemented | ✅ Automatic optimization |
+| Category | Mini Next.js | Notes |
+|----------|--------------|-------|
+| **Core Features** | 95% | RSC, Flight Protocol, SSG, ISR, Streaming SSR |
+| **Routing** | 90% | File-system, dynamic routes, route groups, catch-all |
+| **Data Fetching** | 85% | async components, params, searchParams, generateStaticParams |
+| **Error Handling** | 100% | error.tsx, global-error.tsx, not-found.tsx |
+| **Advanced Features** | 25% | No API routes, middleware, parallel routes |
+| **Caching** | 60% | Full Route Cache (SSG/ISR), basic router cache |
 
-### Caching Layers
+**Overall Implementation**: **65%** (Core: 95%, Advanced: 25%)
 
-| Cache Layer | Mini Next.js | Next.js 15 |
-|-------------|--------------|------------|
-| Request Memoization | ❌ 0% | ✅ 100% |
-| Data Cache | ❌ 0% | ✅ 100% |
-| Full Route Cache | ⚠️ 60% (SSG/ISR) | ✅ 100% |
-| Router Cache | ⚠️ 40% (basic routing) | ✅ 100% |
-
-> See `NEXTJS_CACHING_STRATEGIES.md` for detailed comparison
+> See [FEATURE_COMPARISON_AND_ROADMAP.md](./docs/FEATURE_COMPARISON_AND_ROADMAP.md) for detailed feature comparison
 
 ## 💡 What You'll Learn
 
@@ -297,18 +293,24 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
 
 This is an **educational project** focused on core concepts, intentionally omitting production complexities:
 
-- ✅ Core RSC and Flight Protocol mechanics
-- ✅ Basic SSG/ISR implementation
-- ✅ Fundamental routing and navigation
-- ✅ Dynamic routes with [param] syntax
-- ✅ Route groups for code organization
-- ❌ Production-grade optimizations
-- ❌ Complete error handling
-- ❌ Advanced caching strategies
-- ❌ Catch-all routes [...slug]
-- ❌ Middleware and API routes
+**✅ Implemented**:
+- Core RSC and Flight Protocol mechanics
+- Complete SSG/ISR implementation with Stale-while-revalidate
+- File-system routing with dynamic routes and route groups
+- generateStaticParams for static generation
+- Async Server Components with Suspense
+- Complete error handling (error.tsx, global-error.tsx, not-found.tsx)
+- Client-side navigation with soft routing
 
-**Goal**: Understand Next.js App Router fundamentals with minimal, readable code
+**❌ Not Implemented**:
+- API Routes (route.ts)
+- Middleware
+- Parallel Routes / Intercepting Routes
+- Data Cache / Request Memoization
+- Metadata API
+- Client Hooks (useRouter, usePathname, etc.)
+
+**Goal**: Understand Next.js App Router fundamentals with clean, TypeScript code
 
 ## 📚 References
 

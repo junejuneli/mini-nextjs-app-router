@@ -44,7 +44,11 @@ export function Router({ initialTree, initialPathname }: RouterProps): React.Rea
 
     if (!newTree) {
       console.log(`🌐 [Router] 加载路由: ${href}`)
-      const response = await fetch(`${href}?_rsc=1`)
+      // 构建 RSC 请求 URL,保留查询参数
+      const separator = href.includes('?') ? '&' : '?'
+      const rscUrl = `${href}${separator}_rsc=1`
+
+      const response = await fetch(rscUrl)
       const flight = await response.text()
       console.log(`📦 [Router] 接收 Flight 数据: 长度=${flight.length}`)
 
@@ -61,7 +65,9 @@ export function Router({ initialTree, initialPathname }: RouterProps): React.Rea
   }, [])
 
   const navigate = useCallback(async (href: string): Promise<void> => {
-    if (href === window.location.pathname) return
+    // 比较完整的 URL (包括查询参数)
+    const currentUrl = window.location.pathname + window.location.search
+    if (href === currentUrl) return
 
     try {
       const newTree = await loadRoute(href)

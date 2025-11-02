@@ -119,6 +119,7 @@ export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
           <ul>
             <li><Link href="/">首页</Link></li>
             <li><Link href="/about">关于</Link></li>
+            <li><Link href="/users">用户 (服务端分页)</Link></li>
             <li><Link href="/blog">博客 (动态路由)</Link></li>
             <li><Link href="/pricing">定价 (路由组)</Link></li>
             <li><Link href="/dashboard">仪表盘 (嵌套布局)</Link></li>

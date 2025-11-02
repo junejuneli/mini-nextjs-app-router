@@ -194,33 +194,40 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
 
 **核心文档**（推荐阅读顺序）：
 
-1. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ 必读
+1. **[FEATURE_COMPARISON_AND_ROADMAP.md](./docs/FEATURE_COMPARISON_AND_ROADMAP.md)** ⭐ 从这里开始
+   - 与 Next.js 15 的完整功能对比
+   - 核心架构和数据流
+   - 6 大核心技术详解（RSC、Flight Protocol、ISR、动态路由、路由组、错误处理）
+   - 推荐学习路径
+
+2. **[FLIGHT_PROTOCOL_DEEP_DIVE.md](./docs/FLIGHT_PROTOCOL_DEEP_DIVE.md)** ⭐ 深度解析
+   - Flight Protocol 协议格式完整规范
+   - Module Reference 机制
+   - 编码器/解码器实现
+   - 双模式解码（SSG vs 客户端）
+   - 实际案例分析
+
+3. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ 必读
    - Client Component 的 5 种加载场景详解
    - SSR 初次加载、客户端导航、预加载、动态导入、React.lazy
    - 网络请求时间线分析
    - 缓存机制详解
    - 性能优化建议
 
-2. **[FLIGHT_PROTOCOL_DEEP_DIVE.md](./docs/FLIGHT_PROTOCOL_DEEP_DIVE.md)** ⭐ 深度解析
-   - Flight Protocol 协议格式完整规范
-   - Module Reference 机制
-   - 编码器/解码器实现
-   - 与 JSON 序列化对比
-   - 实际案例分析
+4. **[SERVER_RUNTIME_AND_ISR.md](./docs/SERVER_RUNTIME_AND_ISR.md)**
+   - 服务端运行时架构
+   - 请求处理管道
+   - ISR 实现（Stale-while-revalidate）
+   - 路由匹配算法
+   - 并发安全和原子写入
 
-3. **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)**
-   - 项目整体架构说明
-   - React Server Components 核心概念
-   - 渲染管道详解
-   - 与真实 Next.js 对比
-
-4. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
+5. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
    - 路由扫描系统实现
-   - 配置提取机制（revalidate, dynamic）
+   - 配置提取机制（revalidate、dynamic）
    - 配置传递流程（构建时 → 运行时）
-   - ISR 生命周期详解
+   - 动态路由和 generateStaticParams
 
-5. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
+6. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
    - Next.js 15 缓存策略
    - 四层缓存架构
    - Mini Next.js 实现对比
@@ -231,49 +238,38 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
 **入门**:
 1. 阅读本 README 了解项目概况
 2. 运行项目并探索示例页面
-3. 阅读 `CLIENT_COMPONENT_LOADING.md` 理解加载机制
+3. 阅读 `FEATURE_COMPARISON_AND_ROADMAP.md` 理解架构和功能对比
 4. 观察浏览器 DevTools 和控制台日志
 
 **进阶**:
 5. 阅读 `FLIGHT_PROTOCOL_DEEP_DIVE.md` 深入协议原理
-6. 阅读 `ARCHITECTURE.md` 理解渲染管道
-7. 查看源码实现细节
-8. 检查 `.next/` 构建输出文件
+6. 阅读 `CLIENT_COMPONENT_LOADING.md` 理解加载机制
+7. 阅读 `SERVER_RUNTIME_AND_ISR.md` 理解服务端运行时
+8. 查看源码实现细节
+9. 检查 `.next/` 构建输出文件
 
 **高级**:
-9. 修改 `app/` 示例并观察变化
-10. 创建自己的 Server/Client Components
-11. 实现新功能并追踪 Flight Protocol 数据
-12. 对比真实 Next.js 源码
+10. 修改 `app/` 示例并观察变化
+11. 创建自己的 Server/Client Components
+12. 实现新功能并追踪 Flight Protocol 数据
+13. 对比真实 Next.js 源码
 
 ## 🆚 与真实 Next.js 对比
 
-### 功能对比
+### 实现状态
 
-| 功能 | Mini Next.js | Next.js 15 |
-|------|--------------|------------|
-| **代码量** | ~2000 行 | 50 万+ 行 |
-| **React Server Components** | ✅ 核心实现 | ✅ 完整实现 |
-| **Flight Protocol** | ✅ 基础编解码器 | ✅ 优化的流式传输 |
-| **文件系统路由** | ✅ app/ 目录 | ✅ + 高级模式 |
-| **Streaming SSR** | ✅ 带 Suspense | ✅ + 选择性 Hydration |
-| **ISR** | ✅ 时间基础重新验证 | ✅ + 按需重新验证 |
-| **客户端路由** | ✅ 基础导航 | ✅ + 智能预取 |
-| **缓存** | ⚠️ 基础（仅 SSG/ISR） | ✅ 四层缓存系统 |
-| **动态路由** | ✅ [param] + generateStaticParams | ✅ [param] 和 [...slug] |
-| **中间件** | ❌ 未实现 | ✅ 完整中间件支持 |
-| **图片/字体优化** | ❌ 未实现 | ✅ 自动优化 |
+| 类别 | Mini Next.js | 说明 |
+|------|--------------|------|
+| **核心功能** | 95% | RSC、Flight Protocol、SSG、ISR、Streaming SSR |
+| **路由系统** | 90% | 文件系统路由、动态路由、路由组、catch-all |
+| **数据获取** | 85% | 异步组件、params、searchParams、generateStaticParams |
+| **错误处理** | 100% | error.tsx、global-error.tsx、not-found.tsx |
+| **高级功能** | 25% | 无 API 路由、中间件、并行路由 |
+| **缓存系统** | 60% | Full Route Cache（SSG/ISR）、基础路由缓存 |
 
-### 缓存层级
+**总体实现度**: **65%**（核心功能: 95%，高级功能: 25%）
 
-| 缓存层 | Mini Next.js | Next.js 15 |
-|--------|--------------|------------|
-| Request Memoization | ❌ 0% | ✅ 100% |
-| Data Cache | ❌ 0% | ✅ 100% |
-| Full Route Cache | ⚠️ 60%（SSG/ISR） | ✅ 100% |
-| Router Cache | ⚠️ 40%（基础路由） | ✅ 100% |
-
-> 详见 `NEXTJS_CACHING_STRATEGIES.md`
+> 详见 [FEATURE_COMPARISON_AND_ROADMAP.md](./docs/FEATURE_COMPARISON_AND_ROADMAP.md) 了解详细功能对比
 
 ## 💡 你将学到
 
@@ -297,18 +293,24 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
 
 这是一个**教学项目**，专注核心概念，有意省略生产环境复杂性：
 
-- ✅ 核心 RSC 和 Flight Protocol 机制
-- ✅ 基础 SSG/ISR 实现
-- ✅ 基本路由和导航
-- ✅ 带 [param] 语法的动态路由
-- ✅ 用于代码组织的路由组
-- ❌ 生产级优化
-- ❌ 完整错误处理
-- ❌ 高级缓存策略
-- ❌ Catch-all 路由 [...slug]
-- ❌ 中间件和 API 路由
+**✅ 已实现**:
+- 核心 RSC 和 Flight Protocol 机制
+- 完整的 SSG/ISR 实现（Stale-while-revalidate）
+- 文件系统路由（动态路由 + 路由组）
+- generateStaticParams 静态生成
+- 异步 Server Components + Suspense
+- 完整错误处理（error.tsx、global-error.tsx、not-found.tsx）
+- 客户端软路由导航
 
-**目标**: 用最少、最易读的代码理解 Next.js App Router 核心原理
+**❌ 未实现**:
+- API 路由（route.ts）
+- 中间件（Middleware）
+- 并行路由 / 拦截路由
+- Data Cache / Request Memoization
+- Metadata API
+- 客户端 Hooks（useRouter、usePathname 等）
+
+**目标**: 用简洁的 TypeScript 代码理解 Next.js App Router 核心原理
 
 ## 📚 参考资料
 
