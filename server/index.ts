@@ -8,6 +8,51 @@ import { regenerateInBackground } from './regenerate.ts'
 import { generateHTMLTemplate } from '../shared/html-template.ts'
 import type { RouteNode, ClientComponentMap, ModuleInfo, PrerenderInfo } from '../shared/types.ts'
 
+/**
+ * 从 Express Request 中提取查询参数 (searchParams)
+ *
+ * 查询参数来源：URL 中 `?` 后面的部分
+ * 示例：
+ * - GET /blog?page=2&sort=date → { page: '2', sort: 'date' }
+ * - GET /search?tag=react&tag=hooks → { tag: ['react', 'hooks'] }
+ *
+ * 特性：
+ * - 自动过滤内部参数（如 _rsc）
+ * - 处理同名参数（转换为数组）
+ * - 返回干净的 searchParams 对象
+ *
+ * 用途：
+ * - 传递给 Page 组件的 searchParams prop
+ * - ❌ 不传递给 Layout 组件（Layout 跨页面共享，不应依赖查询参数）
+ *
+ * @param req - Express Request 对象
+ * @returns 查询参数对象
+ */
+function extractSearchParams(req: Request): Record<string, string | string[]> {
+  const urlObj = new URL(req.url || '', `http://${req.headers.host}`)
+  const searchParams: Record<string, string | string[]> = {}
+
+  // 内部参数列表（不传递给组件）
+  const internalParams = new Set(['_rsc'])
+
+  urlObj.searchParams.forEach((value, key) => {
+    // 过滤内部参数
+    if (internalParams.has(key)) {
+      return
+    }
+
+    // 处理同名参数（如 ?tag=react&tag=nextjs）
+    const existing = searchParams[key]
+    if (existing) {
+      searchParams[key] = Array.isArray(existing) ? [...existing, value] : [existing, value]
+    } else {
+      searchParams[key] = value
+    }
+  })
+
+  return searchParams
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, '..')
 
@@ -76,6 +121,8 @@ async function buildClientComponentMap(routePath: RouteNode[]): Promise<ClientCo
         const Component = componentModule.default
 
         if (Component) {
+          // 转换路径格式：/Users/.../app/dashboard/page.jsx -> ./app/dashboard/page.jsx
+          // 这样做的目的是为了保证路径id的正确性和唯一性，能够让客户端复用组件
           const relativePath = './' + path.relative(projectRoot, absolutePath)
 
           const moduleInfo: ModuleInfo = {
@@ -140,18 +187,22 @@ async function buildClientComponentMap(routePath: RouteNode[]): Promise<ClientCo
 app.get('*', async (req: Request, res: Response, next: NextFunction) => {
   const url = req.path
 
-  // 跳过静态资源请求，让 express.static 中间件处理
+  // 跳过静态资源请求，让 express.static 中间件处理，对组件的请求不进行处理
   if (url.match(/\.(js|css|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
     return next()
   }
 
   const isRSCRequest = req.query._rsc === '1'
 
-  console.log(`📥 ${isRSCRequest ? 'RSC' : 'HTML'} 请求: ${url}`)
+  // 提取查询参数（自动过滤 _rsc）
+  const searchParams = extractSearchParams(req)
+  const hasSearchParams = Object.keys(searchParams).length > 0
+
+  console.log(`📥 ${isRSCRequest ? 'RSC' : 'HTML'} 请求: ${url}${hasSearchParams ? ' (带查询参数)' : ''}`)
 
   try {
-    // 1. 检查是否有预渲染文件
-    const prerenderInfo = findPrerenderedInfo(url)
+    // 1. 检查是否有预渲染文件 (如果有查询参数,跳过预渲染缓存)
+    const prerenderInfo = !hasSearchParams ? findPrerenderedInfo(url) : null
 
     if (prerenderInfo) {
       // 2. ISR: 检查是否需要重新验证
@@ -183,7 +234,7 @@ app.get('*', async (req: Request, res: Response, next: NextFunction) => {
         console.log(`⚡ 使用预渲染文件 (age: ${pageAge}s)`)
       }
 
-      // 返回预渲染文件(可能是旧的)
+      // 返回预渲染文件(可能是旧的)，如果是RSC请求，则返回Flight Protocol，否则返回HTML
       const filePath = isRSCRequest
         ? path.join(projectRoot, '.next/static', prerenderInfo.flightPath)
         : path.join(projectRoot, '.next/static', prerenderInfo.htmlPath)
@@ -225,12 +276,26 @@ app.get('*', async (req: Request, res: Response, next: NextFunction) => {
       return await renderNotFound(manifest.routeTree, isRSCRequest, res)
     }
 
-    // 渲染 RSC（传入完整路径以支持嵌套 Layout + 动态参数）
+    // 渲染 RSC（传入完整路径以支持嵌套 Layout + 动态参数 + 查询参数）
     if (Object.keys(params).length > 0) {
-      console.log('📌 动态路由参数:', params)
+      console.log('📌 动态路由参数 (params):', params)
     }
+    if (hasSearchParams) {
+      console.log('🔍 查询参数 (searchParams):', searchParams)
+    }
+
     const clientComponentMap = await buildClientComponentMap(routePath)
-    const { flight, clientModules } = await renderRSC(routePath, params, clientComponentMap)
+
+    // ⭐ 传递两个参数给 renderRSC:
+    // - params: 从 URL 路径提取的动态参数 (matchRoute 生成)
+    //   示例: /blog/hello → { slug: 'hello' }
+    // - searchParams: 从 URL 查询字符串提取的参数 (extractSearchParams 生成)
+    //   示例: ?page=2&sort=date → { page: '2', sort: 'date' }
+    const { flight, clientModules } = await renderRSC(
+      routePath,
+      { params, searchParams },
+      clientComponentMap
+    )
 
     console.log('📦 Flight Protocol 长度:', flight?.length || 0)
 
@@ -348,18 +413,27 @@ async function renderNotFound(
 }
 
 /**
- * 路由匹配 - 返回完整路径上的节点数组 + 提取的动态参数
+ * 路由匹配 - 返回完整路径上的节点数组 + 提取的动态参数 (params)
  *
  * 核心：App Router 需要嵌套 Layout，所以要收集路径上所有节点
+ *
+ * 动态参数来源：URL 路径中的动态段
+ * 示例：
+ * - /blog/hello-world (匹配 /blog/[slug]) → { slug: 'hello-world' }
+ * - /posts/2024/01/article (匹配 /posts/[...path]) → { path: ['2024', '01', 'article'] }
  *
  * 支持特性：
  * 1. 静态路由：精确匹配
  * 2. 动态路由：[param] 匹配单个段
  * 3. Catch-all 路由：[...param] 匹配剩余所有段
  *
- * 示例：
- * - /dashboard/settings → [rootNode, dashboardNode, settingsNode], {}
- * - /blog/hello → [rootNode, blogNode, [slug]Node], { slug: 'hello' }
+ * 用途：
+ * - 传递给 Page 组件的 params prop
+ * - 传递给 Layout 组件的 params prop
+ *
+ * 对比 searchParams：
+ * - params 来自 URL 路径：/blog/[slug] → params.slug
+ * - searchParams 来自 URL 查询：?page=2 → searchParams.page
  *
  * @param routeTree - 路由树根节点
  * @param url - URL 路径
