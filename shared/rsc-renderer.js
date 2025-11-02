@@ -139,15 +139,23 @@ async function renderLayout(layoutInfo, children, params) {
 /**
  * 加载并渲染组件
  *
+ * Next.js Page 组件接收的 props 格式：
+ * - params: 动态路由参数，如 { slug: 'hello-world' }
+ * - searchParams: 查询参数（目前未实现）
+ *
  * @param {Object} componentInfo - 组件信息
- * @param {Object} params - 参数
+ * @param {Object} params - 动态路由参数
  * @returns {Promise<ReactElement>}
  */
 async function loadAndRenderComponent(componentInfo, params) {
   const Component = await loadComponent(componentInfo.absolutePath)
 
+  // ⭐ Next.js 规范：Page 组件接收 { params, searchParams } 作为 props
+  // 即使 params 为空对象，也要传递（保持一致性）
+  const props = { params }
+
   // 执行组件（可能是异步函数）
-  let element = React.createElement(Component, params)
+  let element = React.createElement(Component, props)
 
   // 如果组件返回 Promise，等待它执行完成 ⭐
   if (element && typeof element.then === 'function') {

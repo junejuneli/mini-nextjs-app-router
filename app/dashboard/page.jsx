@@ -3,13 +3,16 @@
 import React, { useState } from 'react'
 
 /**
- * 仪表盘页面 - Client Component
+ * 仪表盘主页 - Client Component
  *
  * 演示特性：
  * - Client Component ('use client' 指令)
- * - 可以使用 useState, useEffect 等 Hooks
- * - 可以绑定事件处理器
- * - 会发送到客户端 (有 JS Bundle)
+ * - 使用 useState, useEffect 等 Hooks
+ * - 事件处理和交互
+ * - 嵌套在 dashboard/layout.jsx 中
+ *
+ * 布局层级：
+ * RootLayout → DashboardLayout → DashboardPage (当前页面)
  */
 
 export default function DashboardPage() {
@@ -18,7 +21,10 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1>📊 仪表盘 <span className="badge">Client Component</span></h1>
+      <h1 style={{ marginBottom: '8px' }}>📊 Dashboard 概览</h1>
+      <p style={{ color: '#666', marginBottom: '32px' }}>
+        欢迎回来！这是您的 Dashboard 主页
+      </p>
 
       <div className="card">
         <h2>🎛️ 交互演示</h2>
@@ -68,6 +74,21 @@ export default function DashboardPage() {
         </ul>
       </div>
 
+      <div className="card" style={{ marginTop: '32px' }}>
+        <h3>💡 嵌套布局说明</h3>
+        <p style={{ fontSize: '14px', lineHeight: '1.8', marginBottom: '12px' }}>
+          这个页面使用了嵌套布局：
+        </p>
+        <ul style={{ fontSize: '14px', lineHeight: '1.8' }}>
+          <li><strong>RootLayout</strong> (app/layout.jsx) - 提供全局导航</li>
+          <li><strong>DashboardLayout</strong> (app/dashboard/layout.jsx) - 提供侧边栏</li>
+          <li><strong>DashboardPage</strong> (当前页面) - Dashboard 主页内容</li>
+        </ul>
+        <p style={{ fontSize: '14px', color: '#666', marginTop: '12px' }}>
+          💡 尝试点击侧边栏导航，观察布局如何保持不变，只有主内容区域更新。
+        </p>
+      </div>
+
       <div style={{
         marginTop: '2rem',
         padding: '1rem',
@@ -75,7 +96,7 @@ export default function DashboardPage() {
         borderLeft: '4px solid #0070f3',
         borderRadius: '4px'
       }}>
-        <strong>💡 原理说明</strong>
+        <strong>💡 Client Component 原理</strong>
         <p style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
           1. 这个组件在服务端<strong>预渲染</strong>为静态 HTML<br/>
           2. Flight Protocol 将其标记为 Client Component 引用<br/>

@@ -138,8 +138,9 @@ app.get('*', async (req, res, next) => {
         console.log(`⚡ 使用预渲染文件 (age: ${pageAge}s, 触发后台重新生成)`)
 
         // 匹配路由获取完整路径
-        const routePath = matchRoute(manifest.routeTree, url)
-        if (routePath) {
+        const matchResult = matchRoute(manifest.routeTree, url)
+        if (matchResult) {
+          const { path: routePath } = matchResult
           const staticDir = path.join(projectRoot, '.next/static')
           const htmlPath = path.join(staticDir, prerenderInfo.htmlPath)
           const flightPath = path.join(staticDir, prerenderInfo.flightPath)
@@ -179,25 +180,32 @@ app.get('*', async (req, res, next) => {
     // 2. 动态渲染（无预渲染文件或动态路由）
     console.log('🔄 动态渲染')
 
-    // 匹配路由 - 返回完整路径 [rootNode, ...childNodes]
-    const routePath = matchRoute(manifest.routeTree, url)
+    // 匹配路由 - 返回完整路径 [rootNode, ...childNodes] + 动态参数
+    const matchResult = matchRoute(manifest.routeTree, url)
 
-    if (!routePath) {
-      res.status(404).send('404 Not Found')
-      return
+    if (!matchResult) {
+      // 路由不匹配时，渲染 not-found.jsx
+      console.log('❌ 路由未找到，渲染 not-found.jsx')
+      return await renderNotFound(manifest.routeTree, isRSCRequest, res)
     }
+
+    const { path: routePath, params } = matchResult
 
     // 获取最后一个节点（目标路由）
     const targetRoute = routePath[routePath.length - 1]
 
     if (!targetRoute.page) {
-      res.status(404).send('404 Not Found - No page.jsx')
-      return
+      // 路由匹配但没有 page.jsx，也渲染 not-found.jsx
+      console.log('❌ 路由无 page.jsx，渲染 not-found.jsx')
+      return await renderNotFound(manifest.routeTree, isRSCRequest, res)
     }
 
-    // 渲染 RSC（传入完整路径以支持嵌套 Layout）
+    // 渲染 RSC（传入完整路径以支持嵌套 Layout + 动态参数）
+    if (Object.keys(params).length > 0) {
+      console.log('📌 动态路由参数:', params)
+    }
     const clientComponentMap = await buildClientComponentMap(routePath)
-    const { flight, clientModules } = await renderRSC(routePath, {}, clientComponentMap)
+    const { flight, clientModules } = await renderRSC(routePath, params, clientComponentMap)
 
     console.log('📦 Flight Protocol 长度:', flight?.length || 0)
 
@@ -252,23 +260,88 @@ function findPrerenderedInfo(url) {
 }
 
 /**
- * 路由匹配 - 返回完整路径上的节点数组
+ * 渲染 not-found.jsx
+ *
+ * @param {Object} routeTree - 路由树根节点
+ * @param {boolean} isRSCRequest - 是否为 RSC 请求
+ * @param {Object} res - Express response 对象
+ */
+async function renderNotFound(routeTree, isRSCRequest, res) {
+  // 检查根节点是否有 not-found.jsx
+  if (!routeTree.notFound) {
+    // 如果没有 not-found.jsx，返回简单的 404
+    res.status(404).send('404 Not Found')
+    return
+  }
+
+  // 构建 not-found 的渲染路径：[rootNode]（包含 layout 和 notFound）
+  const notFoundPath = [{
+    segment: routeTree.segment,
+    path: routeTree.path,
+    layout: routeTree.layout,
+    page: routeTree.notFound,  // 将 notFound 当作 page 来渲染
+    notFound: routeTree.notFound
+  }]
+
+  // 构建 Client Component Map
+  const clientComponentMap = await buildClientComponentMap(notFoundPath)
+
+  // 渲染 RSC
+  const { flight, clientModules } = await renderRSC(notFoundPath, {}, clientComponentMap)
+
+  console.log('📦 Not-Found Flight Protocol 长度:', flight?.length || 0)
+
+  // 如果是 RSC 请求，直接返回 Flight
+  if (isRSCRequest) {
+    res.status(404)
+    res.setHeader('Content-Type', 'text/x-component')
+    res.send(flight)
+    return
+  }
+
+  // 否则返回完整 HTML
+  const html = generateHTMLTemplate({
+    flight,
+    clientModules,
+    pathname: '/not-found',
+    serverData: {
+      nodeVersion: process.version,
+      requestTime: new Date().toISOString(),
+      env: 'production',
+      prerendered: false
+    },
+    prerendered: false
+  })
+
+  res.status(404)
+  res.setHeader('Content-Type', 'text/html')
+  res.send(html)
+}
+
+/**
+ * 路由匹配 - 返回完整路径上的节点数组 + 提取的动态参数
  *
  * 核心：App Router 需要嵌套 Layout，所以要收集路径上所有节点
  *
- * 示例：/dashboard/settings
- *   → [rootNode, dashboardNode, settingsNode]
- *   → 收集所有 layout: [RootLayout, DashboardLayout]
+ * 支持特性：
+ * 1. 静态路由：精确匹配
+ * 2. 动态路由：[param] 匹配单个段
+ * 3. Catch-all 路由：[...param] 匹配剩余所有段
+ *
+ * 示例：
+ * - /dashboard/settings → [rootNode, dashboardNode, settingsNode], {}
+ * - /blog/hello → [rootNode, blogNode, [slug]Node], { slug: 'hello' }
  *
  * @param {Object} routeTree - 路由树根节点
  * @param {string} url - URL 路径
- * @returns {Array} 路径上的所有节点（从根到叶）
+ * @returns {Object|null} { path: Array, params: Object } 或 null
  */
 function matchRoute(routeTree, url) {
   const segments = url === '/' || url === '' ? [] : url.split('/').filter(Boolean)
 
-  // 收集路径上的所有节点
+  // 收集路径上的所有节点和提取的参数
   const path = []
+  const params = {}
 
   // 从根节点开始
   let current = routeTree
@@ -276,15 +349,39 @@ function matchRoute(routeTree, url) {
 
   // 如果是根路径，直接返回
   if (segments.length === 0) {
-    return path
+    return { path, params }
   }
 
   // 递归查找
-  for (const segment of segments) {
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i]
+
     if (!current.children) break
 
-    const child = current.children.find(c => c.segment === segment)
+    // ⭐ 优先精确匹配静态路由
+    let child = current.children.find(c => c.segment === segment && !c.dynamic)
 
+    // ⭐ 如果没有精确匹配，尝试动态路由匹配
+    if (!child) {
+      // 查找动态路由节点
+      child = current.children.find(c => c.dynamic)
+
+      if (child) {
+        // Catch-all 路由：[...slug] 匹配剩余所有段
+        if (child.catchAll) {
+          const remainingSegments = segments.slice(i)
+          params[child.param] = remainingSegments
+          path.push(child)
+          // Catch-all 路由消耗所有剩余段，结束匹配
+          return { path, params }
+        } else {
+          // 普通动态路由：[id] 匹配单个段
+          params[child.param] = segment
+        }
+      }
+    }
+
+    // 如果仍然没有匹配，返回 null
     if (!child) {
       console.warn(`Route not found: ${url}`)
       return null
@@ -294,7 +391,7 @@ function matchRoute(routeTree, url) {
     current = child
   }
 
-  return path
+  return { path, params }
 }
 
 

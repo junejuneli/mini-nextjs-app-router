@@ -48,22 +48,26 @@ export async function prerenderStaticRoutes(routeTree, clientComponentMap) {
   fs.mkdirSync(pagesDir, { recursive: true })
   fs.mkdirSync(flightDir, { recursive: true })
 
-  // 收集所有可预渲染的路由
+  // 收集所有可预渲染的路由（包括静态路由和动态路由）
   const staticRoutes = collectStaticRoutes(routeTree)
-  console.log(`  找到 ${staticRoutes.length} 个静态路由:\n`)
+  const dynamicRoutes = await collectDynamicRoutes(routeTree)
+
+  const allRoutes = [...staticRoutes, ...dynamicRoutes]
+  console.log(`  找到 ${staticRoutes.length} 个静态路由 + ${dynamicRoutes.length} 个动态路由:\n`)
 
   const prerendered = []
   const metadataList = []
 
-  // 渲染每个静态路由
-  for (const routeInfo of staticRoutes) {
+  // 渲染每个静态路由（包括静态和动态）
+  for (const routeInfo of allRoutes) {
     try {
-      console.log(`  📄 预渲染: ${routeInfo.path}`)
+      const paramInfo = routeInfo.params ? ` ${JSON.stringify(routeInfo.params)}` : ''
+      console.log(`  📄 预渲染: ${routeInfo.path}${paramInfo}`)
 
-      // 渲染 RSC
+      // 渲染 RSC（传递参数）
       const { flight, clientModules } = await renderRSC(
         routeInfo.routePath,
-        {},
+        routeInfo.params || {},  // ⭐ 传递动态路由参数
         clientComponentMap
       )
 
@@ -90,9 +94,13 @@ export async function prerenderStaticRoutes(routeTree, clientComponentMap) {
         moduleMap  // 传递模块映射表以渲染 Client Components
       })
 
-      // 保存文件
+      // 保存文件（确保父目录存在）
       const htmlPath = getHtmlPath(pagesDir, routeInfo.path)
       const flightPath = getFlightPath(flightDir, routeInfo.path)
+
+      // 创建父目录（如果不存在）
+      fs.mkdirSync(path.dirname(htmlPath), { recursive: true })
+      fs.mkdirSync(path.dirname(flightPath), { recursive: true })
 
       fs.writeFileSync(htmlPath, html)
       fs.writeFileSync(flightPath, flight)
@@ -168,6 +176,97 @@ function collectStaticRoutes(node, path = [node], result = []) {
   }
 
   return result
+}
+
+/**
+ * 收集动态路由并通过 generateStaticParams() 生成静态页面
+ *
+ * 核心流程：
+ * 1. 遍历路由树，找到动态路由节点（node.dynamic === true）
+ * 2. 检查对应的 page.jsx 是否导出 generateStaticParams 函数
+ * 3. 调用该函数获取参数列表：[{ slug: 'post-1' }, { slug: 'post-2' }]
+ * 4. 为每个参数组合生成路由信息
+ *
+ * @param {Object} node - 路由节点
+ * @param {Array} path - 从根到当前节点的路径
+ * @param {Array} result - 累积结果
+ * @returns {Promise<Array>} 动态路由生成的静态路由列表
+ */
+async function collectDynamicRoutes(node, path = [node], result = []) {
+  // 检查当前节点是否为动态路由 且有 page.jsx 且不是强制 SSR
+  if (node.dynamic && node.page && node.page.dynamic !== 'force-dynamic') {
+    try {
+      // 动态导入 page.jsx 模块
+      const pageModule = await import(node.page.absolutePath)
+
+      // 检查是否导出 generateStaticParams
+      if (pageModule.generateStaticParams) {
+        console.log(`  🔧 调用 generateStaticParams: ${node.page.file}`)
+
+        // 调用函数获取参数列表
+        const paramsList = await pageModule.generateStaticParams()
+
+        console.log(`     生成 ${paramsList.length} 个参数组合`)
+
+        // 为每个参数组合生成路由
+        for (const params of paramsList) {
+          // 构建具体路径：将 [slug] 替换为实际值
+          const concretePath = buildPathWithParams(node, path, params)
+
+          result.push({
+            path: concretePath,
+            routePath: [...path],  // 完整路径（用于 Layout 嵌套）
+            params  // 参数对象，如 { slug: 'react-server-components' }
+          })
+        }
+      }
+    } catch (error) {
+      console.warn(`    ⚠️  无法处理动态路由 ${node.path}: ${error.message}`)
+    }
+  }
+
+  // 递归处理子路由
+  if (node.children) {
+    for (const child of node.children) {
+      await collectDynamicRoutes(child, [...path, child], result)
+    }
+  }
+
+  return result
+}
+
+/**
+ * 根据参数构建具体路径
+ *
+ * 核心思路：使用 node.path 作为模板，将其中的动态段替换为实际参数值
+ *
+ * 示例：
+ * - node.path: /blog/[slug]
+ * - 参数: { slug: 'hello-world' }
+ * - 结果: /blog/hello-world
+ *
+ * @param {Object} node - 当前动态路由节点
+ * @param {Array} path - 完整路径（未使用，保留以备后续扩展）
+ * @param {Object} params - 参数对象
+ * @returns {string} 具体路径
+ */
+function buildPathWithParams(node, path, params) {
+  // 使用 node.path 作为模板（例如 "/blog/[slug]"）
+  let concretePath = node.path
+
+  // 替换所有动态段：[param] → 实际值
+  // 如果是 catch-all 路由 [...slug]，params[slug] 是数组
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      // Catch-all: [...slug] → /a/b/c
+      concretePath = concretePath.replace(`[...${key}]`, value.join('/'))
+    } else {
+      // 普通动态路由: [id] → 123
+      concretePath = concretePath.replace(`[${key}]`, value)
+    }
+  }
+
+  return concretePath
 }
 
 

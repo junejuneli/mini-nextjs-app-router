@@ -115,10 +115,13 @@ export default function RootLayout({ children }) {
           <ul>
             <li><Link href="/">首页</Link></li>
             <li><Link href="/about">关于</Link></li>
-            <li><Link href="/dashboard">仪表盘 (Client)</Link></li>
+            <li><Link href="/blog">博客 (动态路由)</Link></li>
+            <li><Link href="/pricing">定价 (路由组)</Link></li>
+            <li><Link href="/dashboard">仪表盘 (嵌套布局)</Link></li>
             <li><Link href="/async-test">异步测试</Link></li>
             <li><Link href="/isr-test">ISR 测试</Link></li>
             <li><Link href="/error-test">错误测试</Link></li>
+            <li><Link href="/404-test">404 测试</Link></li>
           </ul>
         </nav>
 

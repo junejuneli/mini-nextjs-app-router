@@ -184,11 +184,22 @@ function parseSegment(segment) {
 /**
  * 构建 URL 路径
  *
+ * Next.js 路由组特性：
+ * - 括号包裹的目录（如 (marketing)）不出现在 URL 中
+ * - 用于代码组织和共享布局，不影响路由结构
+ * - 例如：app/(marketing)/pricing/page.jsx → /pricing
+ *
  * @param {string} parentPath - 父路径
  * @param {string} segment - 当前段
  * @returns {string} URL 路径
  */
 function buildUrlPath(parentPath, segment) {
+  // ⭐ 路由组：括号包裹的目录不出现在 URL 中
+  // (marketing), (app), (admin) 等都会被跳过
+  if (segment.startsWith('(') && segment.endsWith(')')) {
+    return parentPath || '/'
+  }
+
   // 根路径
   if (!parentPath || parentPath === '/') {
     return `/${segment}`
