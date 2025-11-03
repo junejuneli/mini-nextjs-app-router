@@ -11,6 +11,7 @@ Understand how modern React Server Components and Next.js App Router work throug
 - ✅ **React Server Components (RSC)** - Server/Client component composition
 - ✅ **Flight Protocol** - Custom serialization format for React trees
 - ✅ **Streaming SSR** - Progressive rendering with Suspense
+- ✅ **Server Actions** - RPC mechanism with 'use server' directive (📖 Documentation)
 - ✅ **Nested Layouts** - Automatic layout nesting with soft navigation
 - ✅ **File-system Routing** - Convention-based routing from `app/` directory
 - ✅ **Special Files** - loading.jsx, error.jsx, not-found.jsx
@@ -207,27 +208,34 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
    - Dual-mode decoding (SSG vs Client)
    - Real-world examples
 
-3. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ Essential
+3. **[SERVER_ACTIONS_IMPLEMENTATION.md](./docs/SERVER_ACTIONS_IMPLEMENTATION.md)** ⭐ New
+   - Complete Server Actions ('use server') implementation guide
+   - Build-time scanning → Action Manifest → Runtime RPC
+   - Flight Protocol integration for Server Actions
+   - Security considerations (closure encryption, CSRF protection)
+   - Next.js real implementation comparison
+
+4. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ Essential
    - 5 loading scenarios for Client Components
    - SSR initial load, client navigation, prefetch, dynamic import, React.lazy
    - Network request timeline analysis
    - Caching mechanisms
    - Performance optimization tips
 
-4. **[SERVER_RUNTIME_AND_ISR.md](./docs/SERVER_RUNTIME_AND_ISR.md)**
+5. **[SERVER_RUNTIME_AND_ISR.md](./docs/SERVER_RUNTIME_AND_ISR.md)**
    - Server runtime architecture
    - Request handling pipeline
    - ISR implementation (Stale-while-revalidate)
    - Route matching algorithm
    - Concurrent safety and atomic writes
 
-5. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
+6. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
    - Route scanning system implementation
    - Configuration extraction (revalidate, dynamic)
    - Config flow: build time → runtime
    - Dynamic routes and generateStaticParams
 
-6. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
+7. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
    - Next.js 15 caching strategies
    - Four-layer cache architecture
    - Mini Next.js implementation comparison
@@ -301,6 +309,9 @@ This is an **educational project** focused on core concepts, intentionally omitt
 - Async Server Components with Suspense
 - Complete error handling (error.tsx, global-error.tsx, not-found.tsx)
 - Client-side navigation with soft routing
+
+**📖 Documented (Implementation Guide)**:
+- Server Actions ('use server') - See [SERVER_ACTIONS_IMPLEMENTATION.md](./docs/SERVER_ACTIONS_IMPLEMENTATION.md)
 
 **❌ Not Implemented**:
 - API Routes (route.ts)

@@ -11,6 +11,7 @@
 - ✅ **React Server Components (RSC)** - Server/Client 组件混用
 - ✅ **Flight Protocol** - React 树的自定义序列化格式
 - ✅ **Streaming SSR** - 结合 Suspense 的流式渲染
+- ✅ **Server Actions** - 'use server' 指令的 RPC 机制（📖 文档已完成）
 - ✅ **嵌套布局** - 自动布局嵌套 + 软导航
 - ✅ **文件系统路由** - 基于 `app/` 目录的约定式路由
 - ✅ **特殊文件** - loading.jsx, error.jsx, not-found.jsx
@@ -207,27 +208,34 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
    - 双模式解码（SSG vs 客户端）
    - 实际案例分析
 
-3. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ 必读
+3. **[SERVER_ACTIONS_IMPLEMENTATION.md](./docs/SERVER_ACTIONS_IMPLEMENTATION.md)** ⭐ 新增
+   - Server Actions ('use server') 完整实现指南
+   - 构建时扫描 → Action Manifest → 运行时 RPC
+   - Flight Protocol 集成 Server Actions
+   - 安全性考虑（闭包加密、CSRF 防护）
+   - Next.js 真实实现原理对比
+
+4. **[CLIENT_COMPONENT_LOADING.md](./docs/CLIENT_COMPONENT_LOADING.md)** ⭐ 必读
    - Client Component 的 5 种加载场景详解
    - SSR 初次加载、客户端导航、预加载、动态导入、React.lazy
    - 网络请求时间线分析
    - 缓存机制详解
    - 性能优化建议
 
-4. **[SERVER_RUNTIME_AND_ISR.md](./docs/SERVER_RUNTIME_AND_ISR.md)**
+5. **[SERVER_RUNTIME_AND_ISR.md](./docs/SERVER_RUNTIME_AND_ISR.md)**
    - 服务端运行时架构
    - 请求处理管道
    - ISR 实现（Stale-while-revalidate）
    - 路由匹配算法
    - 并发安全和原子写入
 
-5. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
+6. **[ROUTE_SCANNING_AND_CONFIG.md](./docs/ROUTE_SCANNING_AND_CONFIG.md)**
    - 路由扫描系统实现
    - 配置提取机制（revalidate、dynamic）
    - 配置传递流程（构建时 → 运行时）
    - 动态路由和 generateStaticParams
 
-6. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
+7. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
    - Next.js 15 缓存策略
    - 四层缓存架构
    - Mini Next.js 实现对比
@@ -301,6 +309,9 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
 - 异步 Server Components + Suspense
 - 完整错误处理（error.tsx、global-error.tsx、not-found.tsx）
 - 客户端软路由导航
+
+**📖 已文档化（实现指南）**:
+- Server Actions ('use server') - 详见 [SERVER_ACTIONS_IMPLEMENTATION.md](./docs/SERVER_ACTIONS_IMPLEMENTATION.md)
 
 **❌ 未实现**:
 - API 路由（route.ts）
