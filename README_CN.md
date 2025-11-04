@@ -235,11 +235,20 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
    - 配置传递流程（构建时 → 运行时）
    - 动态路由和 generateStaticParams
 
-7. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
-   - Next.js 15 缓存策略
-   - 四层缓存架构
-   - Mini Next.js 实现对比
-   - 最佳实践
+7. **[NEXTJS_CACHING_DEEP_DIVE.md](./docs/NEXTJS_CACHING_DEEP_DIVE.md)** ⭐ 深度剖析
+   - 四层缓存架构原理详解
+   - Request Memoization 实现机制 (dedupe-fetch)
+   - Data Cache 磁盘存储与缓存键生成
+   - Full Route Cache ISR 与 Stale-While-Revalidate 策略
+   - Router Cache 客户端缓存机制
+   - 缓存失效机制 (revalidatePath/Tag)
+   - Mini Next.js ISR 实现源码分析
+
+8. **[NEXTJS_ASSET_AND_SEO_OPTIMIZATION.md](./docs/NEXTJS_ASSET_AND_SEO_OPTIMIZATION.md)** ⭐ 必读
+   - 图片优化 (next/image) - WebP/AVIF、懒加载、响应式图片
+   - 字体优化 (next/font) - 自托管、零布局偏移
+   - CSS 优化 - Tailwind CSS、CSS Modules、性能对比
+   - SEO 优化 - Metadata API、sitemap、robots.txt、结构化数据
 
 ## 🎓 学习路径
 

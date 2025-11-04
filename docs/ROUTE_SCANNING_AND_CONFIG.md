@@ -235,23 +235,6 @@ batchSaveMetadata() → 保存 revalidate 到元数据
 保存 manifest.json
 ```
 
-### 运行时
-
-**代码位置**: `server/index.ts:128-177`
-
-```
-加载 manifest.json
-  ↓
-处理请求 GET /blog
-  ↓
-检查是否预渲染
-  ↓
-shouldRevalidate() → 比较时间判断是否超过 revalidate
-  ↓
-如果需要重新验证:
-  ├─ 立即返回旧缓存 (用户无感知)
-  └─ 后台 regenerateInBackground()
-```
 
 ---
 

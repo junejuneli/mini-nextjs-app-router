@@ -235,11 +235,20 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
    - Config flow: build time → runtime
    - Dynamic routes and generateStaticParams
 
-7. **[NEXTJS_CACHING_STRATEGIES.md](./docs/NEXTJS_CACHING_STRATEGIES.md)**
-   - Next.js 15 caching strategies
-   - Four-layer cache architecture
-   - Mini Next.js implementation comparison
-   - Best practices
+7. **[NEXTJS_CACHING_DEEP_DIVE.md](./docs/NEXTJS_CACHING_DEEP_DIVE.md)** ⭐ Deep Dive
+   - Four-layer cache architecture principles
+   - Request Memoization implementation (dedupe-fetch)
+   - Data Cache disk storage and key generation
+   - Full Route Cache ISR with Stale-While-Revalidate
+   - Router Cache client-side mechanism
+   - Cache invalidation (revalidatePath/Tag)
+   - Mini Next.js ISR implementation analysis
+
+8. **[NEXTJS_ASSET_AND_SEO_OPTIMIZATION.md](./docs/NEXTJS_ASSET_AND_SEO_OPTIMIZATION.md)** ⭐ Essential
+   - Image optimization (next/image) - WebP/AVIF, lazy loading, responsive images
+   - Font optimization (next/font) - Self-hosting, zero layout shift
+   - CSS optimization - Tailwind CSS, CSS Modules, performance comparison
+   - SEO optimization - Metadata API, sitemap, robots.txt, structured data
 
 ## 🎓 Learning Path
 
