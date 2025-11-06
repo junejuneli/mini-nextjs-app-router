@@ -250,6 +250,23 @@ Link click → Intercept → Fetch ?_rsc=1 → Get Flight payload
    - CSS optimization - Tailwind CSS, CSS Modules, performance comparison
    - SEO optimization - Metadata API, sitemap, robots.txt, structured data
 
+9. **[INCREMENTAL_NAVIGATION_UPDATE.md](./docs/INCREMENTAL_NAVIGATION_UPDATE.md)** ⭐ Performance
+   - Partial Rendering (incremental navigation updates) implementation guide
+   - Route Segments concept and shared segment calculation algorithm
+   - Flight Protocol partial transmission mechanism
+   - Client-side tree merge strategy (Replace, not Merge)
+   - Server-side incremental rendering (startIndex parameter)
+   - 80% performance improvement (bandwidth savings, render time optimization)
+
+10. **[NEXTJS_PARTIAL_RENDERING_INTERNALS.md](./docs/NEXTJS_PARTIAL_RENDERING_INTERNALS.md)** ⭐ Deep Dive
+   - Next.js 15 real implementation analysis of Partial Rendering
+   - FlightRouterState and CacheNode architecture
+   - Server-side shared depth calculation and skipping algorithm
+   - Client-side Router Reducer and state patch mechanism
+   - applyPartialPatch tree cloning and merging strategy
+   - Router Cache integration with prefetch
+   - Source code tracing and debugging techniques
+
 ## 🎓 Learning Path
 
 **Beginner**:

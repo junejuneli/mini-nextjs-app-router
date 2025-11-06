@@ -250,6 +250,23 @@ Link 点击 → 拦截 → 获取 ?_rsc=1 → 获取 Flight payload
    - CSS 优化 - Tailwind CSS、CSS Modules、性能对比
    - SEO 优化 - Metadata API、sitemap、robots.txt、结构化数据
 
+9. **[INCREMENTAL_NAVIGATION_UPDATE.md](./docs/INCREMENTAL_NAVIGATION_UPDATE.md)** ⭐ 性能优化
+   - Partial Rendering (增量导航更新) 实现方案
+   - Route Segments 概念与共享段计算算法
+   - Flight Protocol 分段传输机制
+   - 客户端树合并策略 (Replace, not Merge)
+   - 服务端增量渲染实现 (startIndex 参数)
+   - 性能提升 80% (带宽节省、渲染时间优化)
+
+10. **[NEXTJS_PARTIAL_RENDERING_INTERNALS.md](./docs/NEXTJS_PARTIAL_RENDERING_INTERNALS.md)** ⭐ 深度剖析
+   - Next.js 15 增量导航真实实现原理分析
+   - FlightRouterState 和 CacheNode 架构详解
+   - 服务端共享深度计算与跳过算法
+   - 客户端 Router Reducer 与状态补丁机制
+   - applyPartialPatch 树克隆与合并策略
+   - Router Cache 与 prefetch 集成
+   - 源码追踪与调试技巧
+
 ## 🎓 学习路径
 
 **入门**:
